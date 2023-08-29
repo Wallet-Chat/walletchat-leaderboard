@@ -9,12 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@rainbow-me/rainbowkit": "^1.0.9",
     "chart.js": "^3.6.1",
     "classnames": "^2.3.1",
     "next": "11.1.2",
     "react": "17.0.2",
     "react-chartjs-2": "^4.0.0",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "viem": "^1.9.0",
+    "wagmi": "^1.3.10"
   },
   "devDependencies": {
     "@roketid/windmill-react-ui": "^0.1.1",
