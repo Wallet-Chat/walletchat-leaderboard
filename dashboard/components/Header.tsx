@@ -1,31 +1,21 @@
 import { useContext, useState } from "react";
 import SidebarContext from "context/SidebarContext";
-import {
-  MoonIcon,
-  SunIcon,
-  MenuIcon,
-  OutlinePersonIcon,
-  OutlineCogIcon,
-  OutlineLogoutIcon,
-} from "icons";
+import { MoonIcon, SunIcon, OutlineLogoutIcon } from "icons";
 import {
   Avatar,
   Dropdown,
   DropdownItem,
   WindmillContext,
-  Button,
 } from "@roketid/windmill-react-ui";
+import { useAccount, useDisconnect } from "wagmi";
 
 function Header() {
   const { mode, toggleMode } = useContext(WindmillContext);
   const { toggleSidebar } = useContext(SidebarContext);
+  const { address: wagmiAddress } = useAccount();
+  const { disconnect } = useDisconnect();
 
-  const [isNotificationsMenuOpen, setIsNotificationsMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-
-  function handleNotificationsClick() {
-    setIsNotificationsMenuOpen(!isNotificationsMenuOpen);
-  }
 
   function handleProfileClick() {
     setIsProfileMenuOpen(!isProfileMenuOpen);
@@ -76,7 +66,7 @@ function Header() {
           {/* <!-- Notifications menu --> */}
           <div className="relative">
             <div className="px-4 py-2 rounded-lg bg-black text-white">
-              Connected Wallet
+              {`${wagmiAddress?.slice(0, 7)}...${wagmiAddress?.slice(35)}`}
             </div>
           </div>
           {/* <!-- Profile menu --> */}
@@ -99,18 +89,7 @@ function Header() {
               isOpen={isProfileMenuOpen}
               onClose={() => setIsProfileMenuOpen(false)}
             >
-              <DropdownItem tag="a" href="#">
-                <OutlinePersonIcon
-                  className="w-4 h-4 mr-3"
-                  aria-hidden="true"
-                />
-                <span>Profile</span>
-              </DropdownItem>
-              <DropdownItem tag="a" href="#">
-                <OutlineCogIcon className="w-4 h-4 mr-3" aria-hidden="true" />
-                <span>Settings</span>
-              </DropdownItem>
-              <DropdownItem onClick={() => alert("Log out!")}>
+              <DropdownItem onClick={() => disconnect()}>
                 <OutlineLogoutIcon
                   className="w-4 h-4 mr-3"
                   aria-hidden="true"

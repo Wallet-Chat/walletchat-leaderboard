@@ -29,6 +29,8 @@ import PageTitle from "dashboard/components/Typography/PageTitle";
 import CTA from "dashboard/components/CTA";
 import Layout from "dashboard/containers/Layout";
 import RoundIcon from "dashboard/components/RoundIcon";
+import { useAccount } from "wagmi";
+import LoginPage from "./login";
 
 function Dashboard() {
   Chart.register(
@@ -44,6 +46,7 @@ function Dashboard() {
 
   const [page, setPage] = useState(1);
   const [data, setData] = useState<ITableData[]>([]);
+  const { address: wagmiAddress } = useAccount();
 
   // pagination setup
   const resultsPerPage = 10;
@@ -59,6 +62,8 @@ function Dashboard() {
   useEffect(() => {
     setData(response.slice((page - 1) * resultsPerPage, page * resultsPerPage));
   }, [page]);
+
+  if (!wagmiAddress) return <LoginPage />;
 
   return (
     <Layout>
