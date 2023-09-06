@@ -31,6 +31,7 @@ import Layout from "dashboard/containers/Layout";
 import RoundIcon from "dashboard/components/RoundIcon";
 import { useAccount } from "wagmi";
 import LoginPage from "./login";
+import { useAppContext } from "context/AppContext";
 
 function Dashboard() {
   Chart.register(
@@ -44,13 +45,14 @@ function Dashboard() {
     Legend
   );
 
+  const { leaderboard } = useAppContext();
   const [page, setPage] = useState(1);
-  const [data, setData] = useState<ITableData[]>([]);
+  const [data, setData] = useState<string[]>([]);
   const { address: wagmiAddress } = useAccount();
 
   // pagination setup
   const resultsPerPage = 10;
-  const totalResults = response.length;
+  const totalResults = leaderboard.length;
 
   // pagination change control
   function onPageChange(p: number) {
@@ -60,7 +62,9 @@ function Dashboard() {
   // on page change, load new sliced data
   // here you would make another server request for new data
   useEffect(() => {
-    setData(response.slice((page - 1) * resultsPerPage, page * resultsPerPage));
+    setData(
+      leaderboard.slice((page - 1) * resultsPerPage, page * resultsPerPage)
+    );
   }, [page]);
 
   if (!wagmiAddress) return <LoginPage />;
@@ -120,40 +124,50 @@ function Dashboard() {
         <Table>
           <TableHeader>
             <tr>
-              <TableCell>Client</TableCell>
-              <TableCell>Amount</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Date</TableCell>
+              <TableCell>User</TableCell>
+              <TableCell>Message Sent</TableCell>
+              <TableCell>Message Received</TableCell>
+              <TableCell>Unique Conversations</TableCell>
+              <TableCell>Installed Snap</TableCell>
+              <TableCell>Redeemed Count</TableCell>
+              <TableCell>Points</TableCell>
             </tr>
           </TableHeader>
           <TableBody>
-            {data.map((user, i) => (
+            {data.map((user: any, i) => (
               <TableRow key={i}>
                 <TableCell>
                   <div className="flex items-center text-sm">
                     <Avatar
                       className="hidden mr-3 md:block"
-                      src={user.avatar}
+                      src="https://uploads-ssl.webflow.com/62d761bae8bf2da003f57b06/62d761bae8bf2dea68f57b52_walletchat%20logo.png"
                       alt="User image"
                     />
                     <div>
-                      <p className="font-semibold">{user.name}</p>
+                      <p className="font-semibold">{user?.Username}</p>
                       <p className="text-xs text-gray-600 dark:text-gray-400">
-                        {user.job}
+                        {user?.Walletaddr}
                       </p>
                     </div>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm">$ {user.amount}</span>
+                  <span className="text-sm">{user?.MessagesTx}</span>
                 </TableCell>
                 <TableCell>
-                  <Badge type={user.status}>{user.status}</Badge>
+                  <span className="text-sm">{user?.MessagesRx}</span>
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm">
-                    {new Date(user.date).toLocaleDateString()}
-                  </span>
+                  <span className="text-sm">{user?.UniqueConvos}</span>
+                </TableCell>
+                <TableCell>
+                  <Badge type={user.Installedsnap}>{user.Installedsnap}</Badge>
+                </TableCell>
+                <TableCell>
+                  <span className="text-sm">{user?.RedeemedCount}</span>
+                </TableCell>
+                <TableCell>
+                  <span className="text-sm">{user?.Points}</span>
                 </TableCell>
               </TableRow>
             ))}
@@ -168,19 +182,6 @@ function Dashboard() {
           />
         </TableFooter>
       </TableContainer>
-
-      {/* <PageTitle>Charts</PageTitle>
-      <div className="grid gap-6 mb-8 md:grid-cols-2">
-        <ChartCard title="Revenue">
-          <Doughnut {...doughnutOptions} />
-          <ChartLegend legends={doughnutLegends} />
-        </ChartCard>
-
-        <ChartCard title="Traffic">
-          <Line {...lineOptions} />
-          <ChartLegend legends={lineLegends} />
-        </ChartCard>
-      </div> */}
     </Layout>
   );
 }

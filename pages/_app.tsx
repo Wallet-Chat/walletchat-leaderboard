@@ -28,6 +28,7 @@ import {
 import { infuraProvider } from "@wagmi/core/providers/infura";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
+import { AppContextProvider } from "context/AppContext";
 
 export const { chains, publicClient } = configureChains(
   [mainnet, polygon, optimism, avalanche, avalancheFuji, celo],
@@ -81,7 +82,9 @@ function MyApp({ Component, pageProps }: AppProps) {
     <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider chains={chains}>
         <Windmill usePreferences={true}>
-          <Component {...pageProps} />
+          <AppContextProvider>
+            <Component {...pageProps} />
+          </AppContextProvider>
         </Windmill>
       </RainbowKitProvider>
     </WagmiConfig>
