@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import response, { ITableData } from "utils/demo/tableData";
-import { ChatIcon, CartIcon, MoneyIcon, PeopleIcon } from "icons";
+import {
+  ChatIcon,
+  CartIcon,
+  MoneyIcon,
+  PeopleIcon,
+  OutlinePersonIcon,
+} from "icons";
 import {
   TableBody,
   TableContainer,
@@ -138,11 +144,15 @@ function Dashboard() {
               <TableRow key={i}>
                 <TableCell>
                   <div className="flex items-center text-sm">
-                    <Avatar
-                      className="hidden mr-3 md:block"
-                      src="https://uploads-ssl.webflow.com/62d761bae8bf2da003f57b06/62d761bae8bf2dea68f57b52_walletchat%20logo.png"
-                      alt="User image"
-                    />
+                    {user?.Pfpdata ? (
+                      <Avatar
+                        className="hidden mr-3 md:block"
+                        src={user?.Pfpdata}
+                        alt="User image"
+                      />
+                    ) : (
+                      <OutlinePersonIcon className="w-8 h-8 mr-3" />
+                    )}
                     <div>
                       <p className="font-semibold">{user?.Username}</p>
                       <p className="text-xs text-gray-600 dark:text-gray-400">
