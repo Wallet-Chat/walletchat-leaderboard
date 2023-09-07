@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import SidebarContext from "context/SidebarContext";
-import { MoonIcon, SunIcon, OutlineLogoutIcon } from "icons";
+import { MoonIcon, SunIcon, OutlineLogoutIcon, OutlinePersonIcon } from "icons";
 import {
   Avatar,
   Dropdown,
@@ -8,9 +8,11 @@ import {
   WindmillContext,
 } from "@roketid/windmill-react-ui";
 import { useAccount, useDisconnect } from "wagmi";
+import { useAppContext } from "context/AppContext";
 
 function Header() {
   const { mode, toggleMode } = useContext(WindmillContext);
+  const { connectedWalletData } = useAppContext();
   const { toggleSidebar } = useContext(SidebarContext);
   const { address: wagmiAddress } = useAccount();
   const { disconnect } = useDisconnect();
@@ -77,12 +79,15 @@ function Header() {
               aria-label="Account"
               aria-haspopup="true"
             >
-              <Avatar
-                className="align-middle"
-                src="https://uploads-ssl.webflow.com/62d761bae8bf2da003f57b06/62d761bae8bf2dea68f57b52_walletchat%20logo.png"
-                alt=""
-                aria-hidden="true"
-              />
+              {connectedWalletData?.Pfpdata ? (
+                <Avatar
+                  className="align-middle"
+                  src={connectedWalletData?.Pfpdata}
+                  alt="User image"
+                />
+              ) : (
+                <OutlinePersonIcon className="w-8 h-8 mr-3" />
+              )}
             </button>
             <Dropdown
               align="right"

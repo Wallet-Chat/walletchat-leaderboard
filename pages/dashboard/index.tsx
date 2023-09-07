@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import response, { ITableData } from "utils/demo/tableData";
 import {
   ChatIcon,
   CartIcon,
@@ -51,10 +50,20 @@ function Dashboard() {
     Legend
   );
 
-  const { leaderboard } = useAppContext();
+  const { leaderboard, connectedWalletData } = useAppContext();
   const [page, setPage] = useState(1);
   const [data, setData] = useState<string[]>([]);
   const { address: wagmiAddress } = useAccount();
+
+  // on page change, load new sliced data
+  // here you would make another server request for new data
+  useEffect(() => {
+    setData(
+      leaderboard.slice((page - 1) * resultsPerPage, page * resultsPerPage)
+    );
+  }, [page, leaderboard]);
+
+  console.log("checking:", data);
 
   // pagination setup
   const resultsPerPage = 10;
@@ -65,33 +74,28 @@ function Dashboard() {
     setPage(p);
   }
 
-  // on page change, load new sliced data
-  // here you would make another server request for new data
-  useEffect(() => {
-    setData(
-      leaderboard.slice((page - 1) * resultsPerPage, page * resultsPerPage)
-    );
-  }, [page]);
-
   if (!wagmiAddress) return <LoginPage />;
 
   return (
     <Layout>
-      <PageTitle>Dashboard</PageTitle>
+      <PageTitle>Welcome, {connectedWalletData?.Username}</PageTitle>
 
       {/* <!-- Cards --> */}
-      <div className="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-4">
-        <InfoCard title="Credit Balance" value="6389">
+      <div className="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-3">
+        <InfoCard title="Message Sent" value={connectedWalletData?.MessagesTx}>
           {/* @ts-ignore */}
           <RoundIcon
             icon={PeopleIcon}
             iconColorClass="text-orange-500 dark:text-orange-100"
-            bgColorClass="bg-orange-100 dark:bg-orange-500"
+            bgColorClass="bg-green-100 dark:bg-orange-500"
             className="mr-4"
           />
         </InfoCard>
 
-        <InfoCard title="Current Chatpoints" value="$ 46,760.89">
+        <InfoCard
+          title="Message Received"
+          value={connectedWalletData?.MessagesRx}
+        >
           {/* @ts-ignore */}
           <RoundIcon
             icon={MoneyIcon}
@@ -101,7 +105,10 @@ function Dashboard() {
           />
         </InfoCard>
 
-        <InfoCard title="Social Multiplier" value="376">
+        <InfoCard
+          title="Unique Conversations"
+          value={connectedWalletData?.UniqueConvos}
+        >
           {/* @ts-ignore */}
           <RoundIcon
             icon={CartIcon}
@@ -111,12 +118,38 @@ function Dashboard() {
           />
         </InfoCard>
 
-        <InfoCard title="Pending contacts" value="35">
+        <InfoCard
+          title="Installed Snap"
+          value={connectedWalletData?.Installedsnap}
+        >
           {/* @ts-ignore */}
           <RoundIcon
             icon={ChatIcon}
             iconColorClass="text-teal-500 dark:text-teal-100"
             bgColorClass="bg-teal-100 dark:bg-teal-500"
+            className="mr-4"
+          />
+        </InfoCard>
+
+        <InfoCard
+          title="Redeemed Count"
+          value={connectedWalletData?.RedeemedCount}
+        >
+          {/* @ts-ignore */}
+          <RoundIcon
+            icon={PeopleIcon}
+            iconColorClass="text-orange-500 dark:text-orange-100"
+            bgColorClass="bg-green-100 dark:bg-orange-500"
+            className="mr-4"
+          />
+        </InfoCard>
+
+        <InfoCard title="Points" value={connectedWalletData?.Points}>
+          {/* @ts-ignore */}
+          <RoundIcon
+            icon={MoneyIcon}
+            iconColorClass="text-green-500 dark:text-green-100"
+            bgColorClass="bg-green-100 dark:bg-green-500"
             className="mr-4"
           />
         </InfoCard>

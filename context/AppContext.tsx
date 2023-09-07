@@ -5,10 +5,13 @@ import React, {
   useContext,
   useEffect,
 } from "react";
+import { useAccount } from "wagmi";
 
 interface AppContextType {
   leaderboard: string[];
+  connectedWalletData: any;
   fetchLeaderboard: () => void;
+  fetchConnectedWalletData: () => void;
 }
 
 interface Props {
@@ -18,9 +21,12 @@ interface Props {
 const AppContext = createContext<AppContextType>({} as AppContextType);
 
 export const AppContextProvider = ({ children }: Props) => {
+  const { address: wagmiAddress } = useAccount();
   const [leaderboard, setLeaderboard] = useState<string[]>([]);
+  const [connectedWalletData, setConnectedWalletData] = useState();
 
   useEffect(() => {
+    fetchConnectedWalletData();
     fetchLeaderboard();
   }, []);
 
@@ -46,11 +52,32 @@ export const AppContextProvider = ({ children }: Props) => {
     }
   };
 
+  const fetchConnectedWalletData = async () => {
+    let connectedWalletData;
+    console.log("fetching connectedWalletData");
+    // Setup request options:
+    var requestOptions = {
+      method: "GET",
+    };
+    const baseURL = `https://api.v2.walletchat.fun/get_leaderboard_data/${wagmiAddress}`;
+
+    connectedWalletData = await fetch(baseURL, requestOptions).then((data) =>
+      data.json()
+    );
+
+    if (connectedWalletData) {
+      console.log(connectedWalletData);
+      setConnectedWalletData(connectedWalletData);
+    }
+  };
+
   return (
     <AppContext.Provider
       value={{
         fetchLeaderboard,
+        fetchConnectedWalletData,
         leaderboard,
+        connectedWalletData,
       }}
     >
       {children}
