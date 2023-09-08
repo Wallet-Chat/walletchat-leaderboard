@@ -21,14 +21,14 @@ interface Props {
 const AppContext = createContext<AppContextType>({} as AppContextType);
 
 export const AppContextProvider = ({ children }: Props) => {
-  const { address: wagmiAddress } = useAccount();
+  const { address: wagmiAddress, isConnected } = useAccount();
   const [leaderboard, setLeaderboard] = useState<string[]>([]);
   const [connectedWalletData, setConnectedWalletData] = useState();
 
   useEffect(() => {
     fetchConnectedWalletData();
     fetchLeaderboard();
-  }, []);
+  }, [isConnected]);
 
   /**
    * @dev to fetch leaderboard
