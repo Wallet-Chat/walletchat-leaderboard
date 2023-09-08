@@ -173,7 +173,7 @@ function Dashboard() {
             </tr>
           </TableHeader>
           <TableBody>
-            {data.map((user: any, i) => (
+            {data.map((user: any, i: any) => (
               <TableRow key={i}>
                 <TableCell>
                   <div className="flex items-center text-sm">

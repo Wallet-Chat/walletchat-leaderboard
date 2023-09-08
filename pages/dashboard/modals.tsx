@@ -1,19 +1,25 @@
-import { useState } from 'react'
+import { useState } from "react";
 
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from '@roketid/windmill-react-ui'
-import PageTitle from 'example/components/Typography/PageTitle'
-import CTA from 'example/components/CTA'
-import Layout from 'example/containers/Layout'
+import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+} from "@roketid/windmill-react-ui";
+import PageTitle from "dashboard/components/Typography/PageTitle";
+import CTA from "dashboard/components/CTA";
+import Layout from "dashboard/containers/Layout";
 
 function Modals() {
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   function openModal() {
-    setIsModalOpen(true)
+    setIsModalOpen(true);
   }
 
   function closeModal() {
-    setIsModalOpen(false)
+    setIsModalOpen(false);
   }
 
   return (
@@ -28,8 +34,8 @@ function Modals() {
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         <ModalHeader>Modal header</ModalHeader>
         <ModalBody>
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nostrum et eligendi repudiandae
-          voluptatem tempore!
+          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nostrum et
+          eligendi repudiandae voluptatem tempore!
         </ModalBody>
         <ModalFooter>
           {/* I don't like this approach. Consider passing a prop to ModalFooter
@@ -58,7 +64,7 @@ function Modals() {
         </ModalFooter>
       </Modal>
     </Layout>
-  )
+  );
 }
 
-export default Modals
+export default Modals;
