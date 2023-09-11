@@ -9,9 +9,11 @@ import { useAccount } from "wagmi";
 
 interface AppContextType {
   leaderboard: string[];
+  referralCodes: string[];
   connectedWalletData: any;
   fetchLeaderboard: () => void;
   fetchConnectedWalletData: () => void;
+  fetchReferralCodes: () => void;
 }
 
 interface Props {
@@ -24,10 +26,12 @@ export const AppContextProvider = ({ children }: Props) => {
   const { address: wagmiAddress, isConnected } = useAccount();
   const [leaderboard, setLeaderboard] = useState<string[]>([]);
   const [connectedWalletData, setConnectedWalletData] = useState();
+  const [referralCodes, setReferralCodes] = useState<string[]>([]);
 
   useEffect(() => {
     fetchConnectedWalletData();
     fetchLeaderboard();
+    fetchReferralCodes();
   }, [isConnected]);
 
   /**
@@ -71,11 +75,32 @@ export const AppContextProvider = ({ children }: Props) => {
     }
   };
 
+  const fetchReferralCodes = async () => {
+    let referralCodes;
+    console.log("fetching referralcodes");
+    // Setup request options:
+    var requestOptions = {
+      method: "GET",
+    };
+    const baseURL = `https://api.v2.walletchat.fun/get_referral_code/${wagmiAddress}`;
+
+    referralCodes = await fetch(baseURL, requestOptions).then((data) =>
+      data.json()
+    );
+
+    if (referralCodes) {
+      console.log(referralCodes);
+      setReferralCodes(referralCodes);
+    }
+  };
+
   return (
     <AppContext.Provider
       value={{
         fetchLeaderboard,
         fetchConnectedWalletData,
+        fetchReferralCodes,
+        referralCodes,
         leaderboard,
         connectedWalletData,
       }}

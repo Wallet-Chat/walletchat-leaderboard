@@ -3,6 +3,7 @@ import "tailwindcss/tailwind.css";
 
 import React from "react";
 import { Windmill } from "@roketid/windmill-react-ui";
+import { Toaster } from "react-hot-toast";
 import type { AppProps } from "next/app";
 import "@rainbow-me/rainbowkit/styles.css";
 import {
@@ -82,6 +83,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider chains={chains}>
         <Windmill usePreferences={true}>
+          <Toaster />
           <AppContextProvider>
             <Component {...pageProps} />
           </AppContextProvider>

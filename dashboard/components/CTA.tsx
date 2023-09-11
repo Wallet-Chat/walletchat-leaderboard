@@ -3,7 +3,7 @@ import React from "react";
 function CTA() {
   return (
     <a
-      className="flex items-center justify-between p-4 mb-8 text-sm font-semibold text-purple-100 bg-black rounded-lg shadow-md focus:outline-none focus:shadow-outline-purple"
+      className="flex items-center justify-between p-4 mt-8 mb-8 text-sm font-semibold text-purple-100 bg-black rounded-lg shadow-md focus:outline-none focus:shadow-outline-purple"
       href="https://github.com/roketid/windmill-dashboard-nextjs-typescript"
     >
       <div className="flex items-center">

@@ -5,6 +5,7 @@ import {
   MoneyIcon,
   PeopleIcon,
   OutlinePersonIcon,
+  CopyIcon,
 } from "icons";
 import {
   TableBody,
@@ -18,6 +19,7 @@ import {
   Badge,
   Pagination,
 } from "@roketid/windmill-react-ui";
+import { toast } from "react-hot-toast";
 import {
   Chart,
   ArcElement,
@@ -50,10 +52,19 @@ function Dashboard() {
     Legend
   );
 
-  const { leaderboard, connectedWalletData } = useAppContext();
+  const { leaderboard, connectedWalletData, referralCodes } = useAppContext();
   const [page, setPage] = useState(1);
   const [data, setData] = useState<string[]>([]);
+  const [referralCodesData, setReferralCodesData] = useState<string[]>([]);
   const { address: wagmiAddress } = useAccount();
+
+  // pagination setup
+  const resultsPerPage = 10;
+  const totalResults = leaderboard.length;
+
+  // referral code pagination setup
+  const codePerPage = 5;
+  const totalCodes = referralCodes.length;
 
   // on page change, load new sliced data
   // here you would make another server request for new data
@@ -61,13 +72,26 @@ function Dashboard() {
     setData(
       leaderboard.slice((page - 1) * resultsPerPage, page * resultsPerPage)
     );
+    setReferralCodesData(
+      referralCodes.slice((page - 1) * codePerPage, page * codePerPage)
+    );
   }, [page, leaderboard]);
 
-  console.log("checking:", data);
+  const copyCode = (code: string) => {
+    const input = document.createElement("input");
+    input.value = code;
 
-  // pagination setup
-  const resultsPerPage = 10;
-  const totalResults = leaderboard.length;
+    document.body.appendChild(input);
+
+    input.select();
+    input.setSelectionRange(0, 99999);
+
+    document.execCommand("copy");
+
+    document.body.removeChild(input);
+
+    toast.success(`${code} copied to clipboard`);
+  };
 
   // pagination change control
   function onPageChange(p: number) {
@@ -81,78 +105,132 @@ function Dashboard() {
       <PageTitle>Welcome, {connectedWalletData?.Username}</PageTitle>
 
       {/* <!-- Cards --> */}
-      <div className="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-3">
-        <InfoCard title="Message Sent" value={connectedWalletData?.MessagesTx}>
-          {/* @ts-ignore */}
-          <RoundIcon
-            icon={PeopleIcon}
-            iconColorClass="text-orange-500 dark:text-orange-100"
-            bgColorClass="bg-green-100 dark:bg-orange-500"
-            className="mr-4"
-          />
-        </InfoCard>
+      <div className="lg:flex lg:justify-between">
+        <div className="grid w-full gap-6 md:grid-cols-2 xl:grid-cols-2">
+          <InfoCard
+            title="Message Sent"
+            value={connectedWalletData?.MessagesTx}
+          >
+            {/* @ts-ignore */}
+            <RoundIcon
+              icon={PeopleIcon}
+              iconColorClass="text-orange-500 dark:text-orange-100"
+              bgColorClass="bg-green-100 dark:bg-orange-500"
+              className="mr-4"
+            />
+          </InfoCard>
 
-        <InfoCard
-          title="Message Received"
-          value={connectedWalletData?.MessagesRx}
-        >
-          {/* @ts-ignore */}
-          <RoundIcon
-            icon={MoneyIcon}
-            iconColorClass="text-green-500 dark:text-green-100"
-            bgColorClass="bg-green-100 dark:bg-green-500"
-            className="mr-4"
-          />
-        </InfoCard>
+          <InfoCard
+            title="Message Received"
+            value={connectedWalletData?.MessagesRx}
+          >
+            {/* @ts-ignore */}
+            <RoundIcon
+              icon={MoneyIcon}
+              iconColorClass="text-green-500 dark:text-green-100"
+              bgColorClass="bg-green-100 dark:bg-green-500"
+              className="mr-4"
+            />
+          </InfoCard>
 
-        <InfoCard
-          title="Unique Conversations"
-          value={connectedWalletData?.UniqueConvos}
-        >
-          {/* @ts-ignore */}
-          <RoundIcon
-            icon={CartIcon}
-            iconColorClass="text-blue-500 dark:text-blue-100"
-            bgColorClass="bg-blue-100 dark:bg-blue-500"
-            className="mr-4"
-          />
-        </InfoCard>
+          <InfoCard
+            title="Unique Conversations"
+            value={connectedWalletData?.UniqueConvos}
+          >
+            {/* @ts-ignore */}
+            <RoundIcon
+              icon={CartIcon}
+              iconColorClass="text-blue-500 dark:text-blue-100"
+              bgColorClass="bg-blue-100 dark:bg-blue-500"
+              className="mr-4"
+            />
+          </InfoCard>
 
-        <InfoCard
-          title="Installed Snap"
-          value={connectedWalletData?.Installedsnap}
-        >
-          {/* @ts-ignore */}
-          <RoundIcon
-            icon={ChatIcon}
-            iconColorClass="text-teal-500 dark:text-teal-100"
-            bgColorClass="bg-teal-100 dark:bg-teal-500"
-            className="mr-4"
-          />
-        </InfoCard>
+          <InfoCard
+            title="Installed Snap"
+            value={connectedWalletData?.Installedsnap}
+          >
+            {/* @ts-ignore */}
+            <RoundIcon
+              icon={ChatIcon}
+              iconColorClass="text-teal-500 dark:text-teal-100"
+              bgColorClass="bg-teal-100 dark:bg-teal-500"
+              className="mr-4"
+            />
+          </InfoCard>
 
-        <InfoCard
-          title="Redeemed Count"
-          value={connectedWalletData?.RedeemedCount}
-        >
-          {/* @ts-ignore */}
-          <RoundIcon
-            icon={PeopleIcon}
-            iconColorClass="text-orange-500 dark:text-orange-100"
-            bgColorClass="bg-green-100 dark:bg-orange-500"
-            className="mr-4"
-          />
-        </InfoCard>
+          <InfoCard
+            title="Redeemed Count"
+            value={connectedWalletData?.RedeemedCount}
+          >
+            {/* @ts-ignore */}
+            <RoundIcon
+              icon={PeopleIcon}
+              iconColorClass="text-orange-500 dark:text-orange-100"
+              bgColorClass="bg-green-100 dark:bg-orange-500"
+              className="mr-4"
+            />
+          </InfoCard>
 
-        <InfoCard title="Points" value={connectedWalletData?.Points}>
-          {/* @ts-ignore */}
-          <RoundIcon
-            icon={MoneyIcon}
-            iconColorClass="text-green-500 dark:text-green-100"
-            bgColorClass="bg-green-100 dark:bg-green-500"
-            className="mr-4"
-          />
-        </InfoCard>
+          <InfoCard title="Points" value={connectedWalletData?.Points}>
+            {/* @ts-ignore */}
+            <RoundIcon
+              icon={MoneyIcon}
+              iconColorClass="text-green-500 dark:text-green-100"
+              bgColorClass="bg-green-100 dark:bg-green-500"
+              className="mr-4"
+            />
+          </InfoCard>
+        </div>
+        <div className="w-full mt-5 lg:mt-0">
+          <TableContainer>
+            <Table>
+              <TableHeader>
+                <tr>
+                  <TableCell>Referral Codes</TableCell>
+                  <TableCell>Status</TableCell>
+                </tr>
+              </TableHeader>
+              <TableBody>
+                {referralCodesData?.map((user: any, i: any) => (
+                  <TableRow className="h-12" key={i}>
+                    <TableCell>
+                      <div className="flex items-center text-sm">
+                        <div className="flex">
+                          <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">
+                            {user?.code}
+                          </p>
+                          <div onClick={() => copyCode(user?.code)}>
+                            <CopyIcon className="h-5 w-5 ml-3 cursor-pointer" />
+                          </div>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center text-sm">
+                        <div>
+                          <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">
+                            {user?.redeemed === true
+                              ? "Redeemed"
+                              : "Not Redeemed"}
+                          </p>
+                        </div>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            <TableFooter>
+              <Pagination
+                totalResults={totalCodes}
+                resultsPerPage={codePerPage}
+                label="Table navigation"
+                onChange={onPageChange}
+              />
+            </TableFooter>
+          </TableContainer>
+        </div>
       </div>
 
       <CTA />
@@ -164,11 +242,6 @@ function Dashboard() {
           <TableHeader>
             <tr>
               <TableCell>User</TableCell>
-              <TableCell>Message Sent</TableCell>
-              <TableCell>Message Received</TableCell>
-              <TableCell>Unique Conversations</TableCell>
-              <TableCell>Installed Snap</TableCell>
-              <TableCell>Redeemed Count</TableCell>
               <TableCell>Points</TableCell>
             </tr>
           </TableHeader>
@@ -179,7 +252,7 @@ function Dashboard() {
                   <div className="flex items-center text-sm">
                     {user?.Pfpdata ? (
                       <Avatar
-                        className="hidden mr-3 md:block"
+                        className="mr-3 md:block"
                         src={user?.Pfpdata}
                         alt="User image"
                       />
@@ -193,21 +266,6 @@ function Dashboard() {
                       </p>
                     </div>
                   </div>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm">{user?.MessagesTx}</span>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm">{user?.MessagesRx}</span>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm">{user?.UniqueConvos}</span>
-                </TableCell>
-                <TableCell>
-                  <Badge type={user.Installedsnap}>{user.Installedsnap}</Badge>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm">{user?.RedeemedCount}</span>
                 </TableCell>
                 <TableCell>
                   <span className="text-sm">{user?.Points}</span>
