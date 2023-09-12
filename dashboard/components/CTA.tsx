@@ -12,10 +12,12 @@ function CTA() {
         </svg> */}
         <span>Comming Soon: Convert ChatPoints into WalletChat tokens</span>
       </div>
-      <span>
-        Learn more{" "}
-        <span dangerouslySetInnerHTML={{ __html: "&RightArrow;" }}></span>
-      </span>
+      <a href="https://twitter.com/wallet_chat" target="_blank">
+        <span>
+          Learn more{" "}
+          <span dangerouslySetInnerHTML={{ __html: "&RightArrow;" }}></span>
+        </span>
+      </a>
     </a>
   );
 }

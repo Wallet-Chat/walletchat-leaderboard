@@ -198,11 +198,17 @@ function Dashboard() {
                       <div className="flex items-center text-sm">
                         <div className="flex">
                           <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">
-                            {user?.code}
+                            {user?.redeemed === true ? (
+                              <s>{user?.code}</s>
+                            ) : (
+                              <>{user?.code}</>
+                            )}
                           </p>
-                          <div onClick={() => copyCode(user?.code)}>
-                            <CopyIcon className="h-5 w-5 ml-3 cursor-pointer" />
-                          </div>
+                          {user?.redeemed === false && (
+                            <div onClick={() => copyCode(user?.code)}>
+                              <CopyIcon className="h-5 w-5 ml-3 cursor-pointer" />
+                            </div>
+                          )}
                         </div>
                       </div>
                     </TableCell>
