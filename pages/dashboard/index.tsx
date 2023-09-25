@@ -57,6 +57,8 @@ function Dashboard() {
   const [data, setData] = useState<string[]>([]);
   const [referralCodesData, setReferralCodesData] = useState<string[]>([]);
   const { address: wagmiAddress } = useAccount();
+  const messageSent =
+    connectedWalletData?.MessagesTx + connectedWalletData?.GroupMessages;
 
   // pagination setup
   const resultsPerPage = 10;
@@ -107,10 +109,7 @@ function Dashboard() {
       {/* <!-- Cards --> */}
       <div className="lg:flex lg:justify-between">
         <div className="grid w-full gap-6 md:grid-cols-2 xl:grid-cols-2">
-          <InfoCard
-            title="Message Sent"
-            value={connectedWalletData?.MessagesTx}
-          >
+          <InfoCard title="Message Sent" value={messageSent}>
             {/* @ts-ignore */}
             <RoundIcon
               icon={PeopleIcon}
