@@ -19,6 +19,7 @@ import {
   Badge,
   Pagination,
 } from "@roketid/windmill-react-ui";
+import Skeleton from "react-skeleton-loader";
 import { toast } from "react-hot-toast";
 import {
   Chart,
@@ -52,8 +53,10 @@ function Dashboard() {
     Legend
   );
 
-  const { leaderboard, connectedWalletData, referralCodes } = useAppContext();
+  const { leaderboard, connectedWalletData, referralCodes, loadingWalletData } =
+    useAppContext();
   const [page, setPage] = useState(1);
+  const [code, setCode] = useState(1);
   const [data, setData] = useState<string[]>([]);
   const [referralCodesData, setReferralCodesData] = useState<string[]>([]);
   const { address: wagmiAddress } = useAccount();
@@ -75,9 +78,9 @@ function Dashboard() {
       leaderboard.slice((page - 1) * resultsPerPage, page * resultsPerPage)
     );
     setReferralCodesData(
-      referralCodes.slice((page - 1) * codePerPage, page * codePerPage)
+      referralCodes.slice((code - 1) * codePerPage, code * codePerPage)
     );
-  }, [page, leaderboard]);
+  }, [page, code, leaderboard, referralCodes]);
 
   const copyCode = (code: string) => {
     const input = document.createElement("input");
@@ -100,6 +103,10 @@ function Dashboard() {
     setPage(p);
   }
 
+  function onCodeChange(p: number) {
+    setCode(p);
+  }
+
   if (!wagmiAddress) return <LoginPage />;
 
   return (
@@ -109,7 +116,11 @@ function Dashboard() {
       {/* <!-- Cards --> */}
       <div className="lg:flex lg:justify-between">
         <div className="grid w-full gap-6 md:grid-cols-2 xl:grid-cols-2">
-          <InfoCard title="Message Sent" value={messageSent}>
+          <InfoCard
+            title="Message Sent"
+            value={messageSent}
+            loading={loadingWalletData}
+          >
             {/* @ts-ignore */}
             <RoundIcon
               icon={PeopleIcon}
@@ -122,6 +133,7 @@ function Dashboard() {
           <InfoCard
             title="Message Received"
             value={connectedWalletData?.MessagesRx}
+            loading={loadingWalletData}
           >
             {/* @ts-ignore */}
             <RoundIcon
@@ -135,6 +147,7 @@ function Dashboard() {
           <InfoCard
             title="Unique Conversations"
             value={connectedWalletData?.UniqueConvos}
+            loading={loadingWalletData}
           >
             {/* @ts-ignore */}
             <RoundIcon
@@ -148,6 +161,7 @@ function Dashboard() {
           <InfoCard
             title="Installed Snap"
             value={connectedWalletData?.Installedsnap}
+            loading={loadingWalletData}
           >
             {/* @ts-ignore */}
             <RoundIcon
@@ -161,6 +175,7 @@ function Dashboard() {
           <InfoCard
             title="Redeemed Count"
             value={connectedWalletData?.RedeemedCount}
+            loading={loadingWalletData}
           >
             {/* @ts-ignore */}
             <RoundIcon
@@ -171,7 +186,11 @@ function Dashboard() {
             />
           </InfoCard>
 
-          <InfoCard title="Points" value={connectedWalletData?.Points}>
+          <InfoCard
+            title="Points"
+            value={connectedWalletData?.Points}
+            loading={loadingWalletData}
+          >
             {/* @ts-ignore */}
             <RoundIcon
               icon={MoneyIcon}
@@ -191,39 +210,50 @@ function Dashboard() {
                 </tr>
               </TableHeader>
               <TableBody>
-                {referralCodesData?.map((user: any, i: any) => (
-                  <TableRow className="h-12" key={i}>
+                {referralCodesData.length === 0 ? (
+                  <TableRow>
                     <TableCell>
-                      <div className="flex items-center text-sm">
-                        <div className="flex">
-                          <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">
-                            {user?.redeemed === true ? (
-                              <s>{user?.code}</s>
-                            ) : (
-                              <>{user?.code}</>
-                            )}
-                          </p>
-                          {user?.redeemed === false && (
-                            <div onClick={() => copyCode(user?.code)}>
-                              <CopyIcon className="h-5 w-5 ml-3 cursor-pointer" />
-                            </div>
-                          )}
-                        </div>
-                      </div>
+                      <Skeleton />
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center text-sm">
-                        <div>
-                          <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">
-                            {user?.redeemed === true
-                              ? "Redeemed"
-                              : "Not Redeemed"}
-                          </p>
-                        </div>
-                      </div>
+                      <Skeleton />
                     </TableCell>
                   </TableRow>
-                ))}
+                ) : (
+                  referralCodesData?.map((user: any, i: any) => (
+                    <TableRow className="h-12" key={i}>
+                      <TableCell>
+                        <div className="flex items-center text-sm">
+                          <div className="flex">
+                            <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">
+                              {user?.redeemed === true ? (
+                                <s>{user?.code}</s>
+                              ) : (
+                                <>{user?.code}</>
+                              )}
+                            </p>
+                            {user?.redeemed === false && (
+                              <div onClick={() => copyCode(user?.code)}>
+                                <CopyIcon className="h-5 w-5 ml-3 cursor-pointer" />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center text-sm">
+                          <div>
+                            <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">
+                              {user?.redeemed === true
+                                ? "Redeemed"
+                                : "Not Redeemed"}
+                            </p>
+                          </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
             <TableFooter>
@@ -231,7 +261,7 @@ function Dashboard() {
                 totalResults={totalCodes}
                 resultsPerPage={codePerPage}
                 label="Table navigation"
-                onChange={onPageChange}
+                onChange={onCodeChange}
               />
             </TableFooter>
           </TableContainer>
@@ -246,37 +276,48 @@ function Dashboard() {
         <Table>
           <TableHeader>
             <tr>
-              <TableCell>User</TableCell>
+              <TableCell>Users</TableCell>
               <TableCell>Points</TableCell>
             </tr>
           </TableHeader>
           <TableBody>
-            {data.map((user: any, i: any) => (
-              <TableRow key={i}>
+            {data.length === 0 ? (
+              <TableRow>
                 <TableCell>
-                  <div className="flex items-center text-sm">
-                    {user?.Pfpdata ? (
-                      <Avatar
-                        className="mr-3 md:block"
-                        src={user?.Pfpdata}
-                        alt="User image"
-                      />
-                    ) : (
-                      <OutlinePersonIcon className="w-8 h-8 mr-3" />
-                    )}
-                    <div>
-                      <p className="font-semibold">{user?.Username}</p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">
-                        {user?.Walletaddr}
-                      </p>
-                    </div>
-                  </div>
+                  <Skeleton />
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm">{user?.Points}</span>
+                  <Skeleton />
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              data.map((user: any, i: any) => (
+                <TableRow key={i}>
+                  <TableCell>
+                    <div className="flex items-center text-sm">
+                      {user?.Pfpdata ? (
+                        <Avatar
+                          className="mr-3 md:block"
+                          src={user?.Pfpdata}
+                          alt="User image"
+                        />
+                      ) : (
+                        <OutlinePersonIcon className="w-8 h-8 mr-3" />
+                      )}
+                      <div>
+                        <p className="font-semibold">{user?.Username}</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">
+                          {user?.Walletaddr}
+                        </p>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm">{user?.Points}</span>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
         <TableFooter>

@@ -11,6 +11,7 @@ interface AppContextType {
   leaderboard: string[];
   referralCodes: string[];
   connectedWalletData: any;
+  loadingWalletData: boolean;
   fetchLeaderboard: () => void;
   fetchConnectedWalletData: () => void;
   fetchReferralCodes: () => void;
@@ -27,6 +28,7 @@ export const AppContextProvider = ({ children }: Props) => {
   const [leaderboard, setLeaderboard] = useState<string[]>([]);
   const [connectedWalletData, setConnectedWalletData] = useState();
   const [referralCodes, setReferralCodes] = useState<string[]>([]);
+  const [loadingWalletData, setLoadingWalletData] = useState<boolean>(false);
 
   useEffect(() => {
     fetchConnectedWalletData();
@@ -38,40 +40,50 @@ export const AppContextProvider = ({ children }: Props) => {
    * @dev to fetch leaderboard
    */
   const fetchLeaderboard = async () => {
-    let leaderboard;
-    console.log("fetching leaderboard");
-    // Setup request options:
-    var requestOptions = {
-      method: "GET",
-    };
-    const baseURL = `https://api.v2.walletchat.fun/get_leaderboard_data`;
+    try {
+      let leaderboard;
+      // console.log("fetching leaderboard");
+      // Setup request options:
+      var requestOptions = {
+        method: "GET",
+      };
+      const baseURL = `https://api.v2.walletchat.fun/get_leaderboard_data`;
 
-    leaderboard = await fetch(baseURL, requestOptions).then((data) =>
-      data.json()
-    );
+      leaderboard = await fetch(baseURL, requestOptions).then((data) =>
+        data.json()
+      );
 
-    if (leaderboard) {
-      console.log(leaderboard);
-      setLeaderboard(leaderboard);
+      if (leaderboard) {
+        // console.log(leaderboard);
+        setLeaderboard(leaderboard);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
   const fetchConnectedWalletData = async () => {
-    let connectedWalletData;
-    console.log("fetching connectedWalletData");
-    // Setup request options:
-    var requestOptions = {
-      method: "GET",
-    };
-    const baseURL = `https://api.v2.walletchat.fun/get_leaderboard_data/${wagmiAddress}`;
+    try {
+      let connectedWalletData;
+      // console.log("fetching connectedWalletData");
+      setLoadingWalletData(true);
+      // Setup request options:
+      var requestOptions = {
+        method: "GET",
+      };
+      const baseURL = `https://api.v2.walletchat.fun/get_leaderboard_data/${wagmiAddress}`;
 
-    connectedWalletData = await fetch(baseURL, requestOptions).then((data) =>
-      data.json()
-    );
+      connectedWalletData = await fetch(baseURL, requestOptions).then((data) =>
+        data.json()
+      );
 
-    if (connectedWalletData) {
-      console.log(connectedWalletData);
-      setConnectedWalletData(connectedWalletData);
+      if (connectedWalletData) {
+        // console.log(connectedWalletData);
+        setConnectedWalletData(connectedWalletData);
+        setLoadingWalletData(false);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -103,6 +115,7 @@ export const AppContextProvider = ({ children }: Props) => {
         referralCodes,
         leaderboard,
         connectedWalletData,
+        loadingWalletData,
       }}
     >
       {children}

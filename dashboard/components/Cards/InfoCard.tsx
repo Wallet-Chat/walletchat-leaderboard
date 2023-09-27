@@ -1,13 +1,16 @@
 import { ReactSVGElement } from "react";
 import { Card, CardBody } from "@roketid/windmill-react-ui";
+// import Skeleton from "react-loading-skeleton";
+import Skeleton from "react-skeleton-loader";
 
 interface IInfoCard {
   title: string;
   value: string;
+  loading: boolean;
   children?: ReactSVGElement;
 }
 
-function InfoCard({ title, value, children }: IInfoCard) {
+function InfoCard({ title, value, loading, children }: IInfoCard) {
   return (
     <Card className="md:w-80">
       <CardBody className="flex items-center">
@@ -17,7 +20,7 @@ function InfoCard({ title, value, children }: IInfoCard) {
             {title}
           </p>
           <p className="text-lg font-semibold text-gray-700 dark:text-gray-200">
-            {value}
+            {loading === true ? <Skeleton /> : value}
           </p>
         </div>
       </CardBody>
