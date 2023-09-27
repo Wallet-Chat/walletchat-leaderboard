@@ -6093,6 +6093,11 @@ react-is@^16.13.1:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
 
+react-loading-skeleton@^3.3.1:
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/react-loading-skeleton/-/react-loading-skeleton-3.3.1.tgz#cd6e3a626ee86c76a46c14e2379243f2f8834e1b"
+  integrity sha512-NilqqwMh2v9omN7LteiDloEVpFyMIa0VGqF+ukqp0ncVlYu1sKYbYGX9JEl+GtOT9TKsh04zCHAbavnQ2USldA==
+
 react-refresh@0.8.3:
   version "0.8.3"
   resolved "https://registry.yarnpkg.com/react-refresh/-/react-refresh-0.8.3.tgz#721d4657672d400c5e3c75d063c4a85fb2d5d68f"
@@ -6116,11 +6121,6 @@ react-remove-scroll@2.5.4:
     tslib "^2.1.0"
     use-callback-ref "^1.3.0"
     use-sidecar "^1.1.2"
-
-react-skeleton-loader@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/react-skeleton-loader/-/react-skeleton-loader-1.0.4.tgz#7bdfd35591f97bd10361e3a793360ce98fdf76ab"
-  integrity sha512-o52c3hmadpaMbQ4Gl8inCiAxjkfQopDJ6PCHfuuLh6NxRqL5ossJ1/FoeONIvOf/r4GC+VOB5an/jr4Qmj59zg==
 
 react-style-singleton@^2.2.1:
   version "2.2.1"

@@ -1,7 +1,8 @@
 import { ReactSVGElement } from "react";
 import { Card, CardBody } from "@roketid/windmill-react-ui";
 // import Skeleton from "react-loading-skeleton";
-import Skeleton from "react-skeleton-loader";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 interface IInfoCard {
   title: string;
