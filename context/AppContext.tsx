@@ -8,7 +8,7 @@ import React, {
 import { useAccount } from "wagmi";
 
 interface AppContextType {
-  leaderboard: string[];
+  leaderboard: any[];
   referralCodes: string[];
   connectedWalletData: any;
   loadingWalletData: boolean;
