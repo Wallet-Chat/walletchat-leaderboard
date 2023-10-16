@@ -18,6 +18,7 @@ import {
   Avatar,
   Badge,
   Pagination,
+  Button,
 } from "@roketid/windmill-react-ui";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -107,6 +108,21 @@ function Dashboard() {
   function onCodeChange(p: number) {
     setCode(p);
   }
+
+  const getRankFromConnectedWallet = () => {
+    // Convert the targetWalletAddr to lowercase for case-insensitive comparison
+    const lowerCaseTarget = wagmiAddress?.toLowerCase();
+
+    for (let i = 0; i < leaderboard.length; i++) {
+      const walletAddr = leaderboard[i]?.Walletaddr.toLowerCase();
+
+      if (walletAddr === lowerCaseTarget) {
+        // Found a match, return the object
+        console.log("Rank: ", i);
+        setPage(i / resultsPerPage + 1);
+      }
+    }
+  };
 
   if (!wagmiAddress) return <LoginPage />;
 
@@ -271,7 +287,16 @@ function Dashboard() {
 
       <CTA />
 
-      <PageTitle>Leaderboard</PageTitle>
+      <view className="flex flex-row items-center">
+        <PageTitle>Leaderboard</PageTitle>
+        <Button
+          size="small"
+          className="h-10 ml-5"
+          onClick={getRankFromConnectedWallet}
+        >
+          Go to my score
+        </Button>
+      </view>
 
       <TableContainer>
         <Table>
