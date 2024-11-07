@@ -124,6 +124,20 @@ function Dashboard() {
     }
   };
 
+  const [isLoading, setIsLoading] = useState(true); // Initial state
+
+  useEffect(() => {
+    // Simulate fetching data
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+  }, []);
+
+  // Ensure that the loading state is handled properly
+  if (isLoading) {
+    return <div>Loading...</div>; // Render loading state
+  }
+
   if (!wagmiAddress) return <LoginPage />;
 
   return (
@@ -131,163 +145,9 @@ function Dashboard() {
       <PageTitle>Welcome, {connectedWalletData?.Username}</PageTitle>
 
       {/* <!-- Cards --> */}
-      <div className="lg:flex lg:justify-between">
-        <div className="grid w-full gap-6 md:grid-cols-2 xl:grid-cols-2">
-          <InfoCard
-            title="Message Sent"
-            value={messageSent}
-            loading={loadingWalletData}
-          >
-            {/* @ts-ignore */}
-            <RoundIcon
-              icon={PeopleIcon}
-              iconColorClass="text-orange-500 dark:text-orange-100"
-              bgColorClass="bg-green-100 dark:bg-orange-500"
-              className="mr-4"
-            />
-          </InfoCard>
-
-          <InfoCard
-            title="Message Received"
-            value={connectedWalletData?.MessagesRx}
-            loading={loadingWalletData}
-          >
-            {/* @ts-ignore */}
-            <RoundIcon
-              icon={MoneyIcon}
-              iconColorClass="text-green-500 dark:text-green-100"
-              bgColorClass="bg-green-100 dark:bg-green-500"
-              className="mr-4"
-            />
-          </InfoCard>
-
-          <InfoCard
-            title="Unique Conversations"
-            value={connectedWalletData?.UniqueConvos}
-            loading={loadingWalletData}
-          >
-            {/* @ts-ignore */}
-            <RoundIcon
-              icon={CartIcon}
-              iconColorClass="text-blue-500 dark:text-blue-100"
-              bgColorClass="bg-blue-100 dark:bg-blue-500"
-              className="mr-4"
-            />
-          </InfoCard>
-
-          <InfoCard
-            title="Installed Snap"
-            value={connectedWalletData?.Installedsnap}
-            loading={loadingWalletData}
-          >
-            {/* @ts-ignore */}
-            <RoundIcon
-              icon={ChatIcon}
-              iconColorClass="text-teal-500 dark:text-teal-100"
-              bgColorClass="bg-teal-100 dark:bg-teal-500"
-              className="mr-4"
-            />
-          </InfoCard>
-
-          <InfoCard
-            title="Redeemed Count"
-            value={connectedWalletData?.RedeemedCount}
-            loading={loadingWalletData}
-          >
-            {/* @ts-ignore */}
-            <RoundIcon
-              icon={PeopleIcon}
-              iconColorClass="text-orange-500 dark:text-orange-100"
-              bgColorClass="bg-green-100 dark:bg-orange-500"
-              className="mr-4"
-            />
-          </InfoCard>
-
-          <InfoCard
-            title="Points"
-            value={connectedWalletData?.Points}
-            loading={loadingWalletData}
-          >
-            {/* @ts-ignore */}
-            <RoundIcon
-              icon={MoneyIcon}
-              iconColorClass="text-green-500 dark:text-green-100"
-              bgColorClass="bg-green-100 dark:bg-green-500"
-              className="mr-4"
-            />
-          </InfoCard>
-        </div>
-        <div className="w-full mt-5 lg:mt-0">
-          <TableContainer>
-            <Table>
-              <TableHeader>
-                <tr>
-                  <TableCell>Referral Codes</TableCell>
-                  <TableCell>Status</TableCell>
-                </tr>
-              </TableHeader>
-              <TableBody>
-                {referralCodesData.length === 0 ? (
-                  <TableRow>
-                    <TableCell>
-                      <Skeleton />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton />
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  referralCodesData?.map((user: any, i: any) => (
-                    <TableRow className="h-12" key={i}>
-                      <TableCell>
-                        <div className="flex items-center text-sm">
-                          <div className="flex">
-                            <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">
-                              {user?.redeemed === true ? (
-                                <s>{user?.code}</s>
-                              ) : (
-                                <>{user?.code}</>
-                              )}
-                            </p>
-                            {user?.redeemed === false && (
-                              <div onClick={() => copyCode(user?.code)}>
-                                <CopyIcon className="h-5 w-5 ml-3 cursor-pointer" />
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center text-sm">
-                          <div>
-                            <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">
-                              {user?.redeemed === true
-                                ? "Redeemed"
-                                : "Not Redeemed"}
-                            </p>
-                          </div>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-            <TableFooter>
-              <Pagination
-                totalResults={totalCodes}
-                resultsPerPage={codePerPage}
-                label="Table navigation"
-                onChange={onCodeChange}
-              />
-            </TableFooter>
-          </TableContainer>
-        </div>
-      </div>
-
       <CTA />
 
-      <view className="flex flex-row items-center">
+      <div className="flex flex-row items-center">
         <PageTitle>Leaderboard</PageTitle>
         <Button
           size="small"
@@ -296,7 +156,7 @@ function Dashboard() {
         >
           Go to my score
         </Button>
-      </view>
+      </div>
 
       <TableContainer>
         <Table>
@@ -331,7 +191,7 @@ function Dashboard() {
                         <OutlinePersonIcon className="w-8 h-8 mr-3" />
                       )}
                       <div>
-                        <p className="font-semibold">{user?.Username}</p>
+                        <p className="font-semibold">{user?.Wallet}</p>
                         <p className="text-xs text-gray-600 dark:text-gray-400">
                           {user?.Walletaddr}
                         </p>
@@ -339,7 +199,7 @@ function Dashboard() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <span className="text-sm">{user?.Points}</span>
+                    <span className="text-sm">{user?.TotalPoints}</span>
                   </TableCell>
                 </TableRow>
               ))

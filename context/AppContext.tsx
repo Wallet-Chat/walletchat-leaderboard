@@ -14,7 +14,6 @@ interface AppContextType {
   loadingWalletData: boolean;
   fetchLeaderboard: () => void;
   fetchConnectedWalletData: () => void;
-  fetchReferralCodes: () => void;
 }
 
 interface Props {
@@ -33,7 +32,6 @@ export const AppContextProvider = ({ children }: Props) => {
   useEffect(() => {
     fetchConnectedWalletData();
     fetchLeaderboard();
-    fetchReferralCodes();
   }, [isConnected]);
 
   /**
@@ -47,7 +45,7 @@ export const AppContextProvider = ({ children }: Props) => {
       var requestOptions = {
         method: "GET",
       };
-      const baseURL = `https://api.v2.walletchat.fun/get_leaderboard_data`;
+      const baseURL = `https://api.v2.walletchat.fun/get_oura_leaderboard_data`;
 
       leaderboard = await fetch(baseURL, requestOptions).then((data) =>
         data.json()
@@ -71,7 +69,7 @@ export const AppContextProvider = ({ children }: Props) => {
       var requestOptions = {
         method: "GET",
       };
-      const baseURL = `https://api.v2.walletchat.fun/get_leaderboard_data/${wagmiAddress}`;
+      const baseURL = `https://api.v2.walletchat.fun/get_oura_leaderboard_data/${wagmiAddress}`;
 
       connectedWalletData = await fetch(baseURL, requestOptions).then((data) =>
         data.json()
@@ -87,31 +85,11 @@ export const AppContextProvider = ({ children }: Props) => {
     }
   };
 
-  const fetchReferralCodes = async () => {
-    let referralCodes;
-    console.log("fetching referralcodes");
-    // Setup request options:
-    var requestOptions = {
-      method: "GET",
-    };
-    const baseURL = `https://api.v2.walletchat.fun/get_referral_code/${wagmiAddress}`;
-
-    referralCodes = await fetch(baseURL, requestOptions).then((data) =>
-      data.json()
-    );
-
-    if (referralCodes) {
-      console.log(referralCodes);
-      setReferralCodes(referralCodes);
-    }
-  };
-
   return (
     <AppContext.Provider
       value={{
         fetchLeaderboard,
         fetchConnectedWalletData,
-        fetchReferralCodes,
         referralCodes,
         leaderboard,
         connectedWalletData,
