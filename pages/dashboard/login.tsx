@@ -11,7 +11,7 @@ function LoginPage() {
           alt=""
         />
         <h1 className="md:text-6xl text-4xl text-white font-bold">
-          WalletChat Leaderboard
+          IntraDAO Leaderboard
         </h1>
         <h2 className="text-white py-5">Connect your wallet to get started</h2>
         <ConnectButton />

@@ -47,7 +47,7 @@ function Header() {
               mode === "dark" ? "text-white" : "text-black"
             } font-semibold pl-3`}
           >
-            WalletChat
+            IntraDAO
           </span>
         </div>
         <ul className="flex items-center flex-shrink-0 space-x-6">

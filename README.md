@@ -1,2 +1,2 @@
-# walletchat-leaderboard
- WalletChat's User's Leaderboard
+# intradao-leaderboard
+ IntraDAO Leaderboard
