@@ -55,126 +55,57 @@ function Dashboard() {
     Legend
   );
 
-  const { leaderboard, connectedWalletData, referralCodes, loadingWalletData } =
-    useAppContext();
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [page, setPage] = useState(1);
-  const [code, setCode] = useState(1);
   const [data, setData] = useState<string[]>([]);
-  const [referralCodesData, setReferralCodesData] = useState<string[]>([]);
-  const { address: wagmiAddress } = useAccount();
-  const messageSent =
-    connectedWalletData?.MessagesTx + connectedWalletData?.GroupMessages;
+  const { leaderboard, connectedWalletData } = useAppContext();
 
-  // pagination setup
+  // Pagination setup
   const resultsPerPage = 10;
-  const totalResults = leaderboard.length;
 
-  // referral code pagination setup
-  const codePerPage = 5;
-  const totalCodes = referralCodes.length;
-
-  // on page change, load new sliced data
-  // here you would make another server request for new data
-  useEffect(() => {
-    setData(
-      leaderboard.slice((page - 1) * resultsPerPage, page * resultsPerPage)
-    );
-    setReferralCodesData(
-      referralCodes.slice((code - 1) * codePerPage, code * codePerPage)
-    );
-  }, [page, code, leaderboard, referralCodes]);
-
-  const copyCode = (code: string) => {
-    const input = document.createElement("input");
-    input.value = code;
-
-    document.body.appendChild(input);
-
-    input.select();
-    input.setSelectionRange(0, 99999);
-
-    document.execCommand("copy");
-
-    document.body.removeChild(input);
-
-    toast.success(`${code} copied to clipboard`);
+  // Function to sort data based on Avg Sleep
+  const sortData = (data: any[]) => {
+    return data.sort((a, b) => {
+      const avgSleepA = a?.AvgSleep || 0;
+      const avgSleepB = b?.AvgSleep || 0;
+      return sortDirection === 'asc' ? avgSleepA - avgSleepB : avgSleepB - avgSleepA;
+    });
   };
 
-  // pagination change control
-  function onPageChange(p: number) {
-    setPage(p);
-  }
-
-  function onCodeChange(p: number) {
-    setCode(p);
-  }
-
-  const getRankFromConnectedWallet = () => {
-    // Convert the targetWalletAddr to lowercase for case-insensitive comparison
-    const lowerCaseTarget = wagmiAddress?.toLowerCase();
-
-    for (let i = 0; i < leaderboard.length; i++) {
-      const walletAddr = leaderboard[i]?.Walletaddr.toLowerCase();
-
-      if (walletAddr === lowerCaseTarget) {
-        // Found a match, return the object
-        console.log("Rank: ", i);
-        setPage(i / resultsPerPage + 1);
-      }
-    }
-  };
-
-  const [isLoading, setIsLoading] = useState(true); // Initial state
-
+  // Update the useEffect to sort data when it changes
   useEffect(() => {
-    // Simulate fetching data
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-  }, []);
+    const sortedData = sortData([...leaderboard.slice((page - 1) * resultsPerPage, page * resultsPerPage)]);
+    setData(sortedData);
+  }, [page, leaderboard, sortDirection]); // Ensure sortData is not included here
+
+  // Function to handle sorting when the header is clicked
+  const handleSort = () => {
+    setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
+  };
 
   // Ensure that the loading state is handled properly
-  if (isLoading) {
-    return <div>Loading...</div>; // Render loading state
-  }
-
-  if (!wagmiAddress) return <LoginPage />;
+  if (!connectedWalletData) return <LoginPage />; // Ensure this is the only early return
 
   return (
     <Layout>
       <PageTitle>Welcome, {connectedWalletData?.Username}</PageTitle>
-
-      {/* <!-- Cards --> */}
-      <CTA />
-
-      <div className="flex flex-row items-center">
-        <PageTitle>Leaderboard</PageTitle>
-        <Button
-          size="small"
-          className="h-10 ml-5"
-          onClick={getRankFromConnectedWallet}
-        >
-          Go to my score
-        </Button>
-      </div>
-
       <TableContainer>
         <Table>
           <TableHeader>
             <tr>
               <TableCell>Users</TableCell>
               <TableCell>Points</TableCell>
+              <TableCell onClick={handleSort} style={{ cursor: 'pointer' }}>
+                Avg Sleep
+              </TableCell>
             </tr>
           </TableHeader>
           <TableBody>
             {data.length === 0 ? (
               <TableRow>
-                <TableCell>
-                  <Skeleton />
-                </TableCell>
-                <TableCell>
-                  <Skeleton />
-                </TableCell>
+                <TableCell><Skeleton /></TableCell>
+                <TableCell><Skeleton /></TableCell>
+                <TableCell><Skeleton /></TableCell>
               </TableRow>
             ) : (
               data.map((user: any, i: any) => (
@@ -182,25 +113,18 @@ function Dashboard() {
                   <TableCell>
                     <div className="flex items-center text-sm">
                       {user?.Pfpdata ? (
-                        <Avatar
-                          className="mr-3 md:block"
-                          src={user?.Pfpdata}
-                          alt="User image"
-                        />
+                        <Avatar className="mr-3 md:block" src={user?.Pfpdata} alt="User image" />
                       ) : (
                         <OutlinePersonIcon className="w-8 h-8 mr-3" />
                       )}
                       <div>
                         <p className="font-semibold">{user?.Wallet}</p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                          {user?.Walletaddr}
-                        </p>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">{user?.Walletaddr}</p>
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <span className="text-sm">{user?.TotalPoints}</span>
-                  </TableCell>
+                  <TableCell><span className="text-sm">{user?.TotalPoints}</span></TableCell>
+                  <TableCell><span className="text-sm">{user?.AvgSleep}</span></TableCell>
                 </TableRow>
               ))
             )}
@@ -208,10 +132,10 @@ function Dashboard() {
         </Table>
         <TableFooter>
           <Pagination
-            totalResults={totalResults}
+            totalResults={leaderboard.length}
             resultsPerPage={resultsPerPage}
             label="Table navigation"
-            onChange={onPageChange}
+            onChange={setPage}
           />
         </TableFooter>
       </TableContainer>
