@@ -56,15 +56,16 @@ function Dashboard() {
   );
 
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [lastSortedColumn, setLastSortedColumn] = useState<'AvgSleep' | 'Points'>('AvgSleep');
   const [page, setPage] = useState(1);
-  const [data, setData] = useState<string[]>([]);
+  const [data, setData] = useState<any[]>([]);
   const { leaderboard, connectedWalletData } = useAppContext();
 
   // Pagination setup
   const resultsPerPage = 10;
 
   // Function to sort data based on Avg Sleep
-  const sortData = (data: any[]) => {
+  const sortDataAvgSleep = (data: any[]) => {
     return data.sort((a, b) => {
       const avgSleepA = a?.AvgSleep || 0;
       const avgSleepB = b?.AvgSleep || 0;
@@ -72,19 +73,40 @@ function Dashboard() {
     });
   };
 
+  // Function to sort data based on Points
+  const sortDataPoints = (data: any[]) => {
+    return data.sort((a, b) => {
+      const pointsA = a?.TotalPoints || 0;
+      const pointsB = b?.TotalPoints || 0;
+      return sortDirection === 'asc' ? pointsA - pointsB : pointsB - pointsA;
+    });
+  };
+
   // Update the useEffect to sort data when it changes
   useEffect(() => {
-    const sortedData = sortData([...leaderboard.slice((page - 1) * resultsPerPage, page * resultsPerPage)]);
+    let sortedData;
+    if (lastSortedColumn === 'Points') {
+      sortedData = sortDataPoints([...leaderboard.slice((page - 1) * resultsPerPage, page * resultsPerPage)]);
+    } else {
+      sortedData = sortDataAvgSleep([...leaderboard.slice((page - 1) * resultsPerPage, page * resultsPerPage)]);
+    }
     setData(sortedData);
-  }, [page, leaderboard, sortDirection]); // Ensure sortData is not included here
+  }, [page, leaderboard, sortDirection, lastSortedColumn]);
 
-  // Function to handle sorting when the header is clicked
-  const handleSort = () => {
+  // Function to handle sorting when the Points header is clicked
+  const handleSortPoints = () => {
+    setLastSortedColumn('Points');
+    setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
+  };
+
+  // Function to handle sorting when the Avg Sleep header is clicked
+  const handleSortSleep = () => {
+    setLastSortedColumn('AvgSleep');
     setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
   };
 
   // Ensure that the loading state is handled properly
-  if (!connectedWalletData) return <LoginPage />; // Ensure this is the only early return
+  if (!connectedWalletData) return <LoginPage />;
 
   return (
     <Layout>
@@ -94,8 +116,9 @@ function Dashboard() {
           <TableHeader>
             <tr>
               <TableCell>Users</TableCell>
-              <TableCell>Points</TableCell>
-              <TableCell onClick={handleSort} style={{ cursor: 'pointer' }}>
+              <TableCell onClick={handleSortPoints} style={{ cursor: 'pointer' }}>
+                Points</TableCell>
+              <TableCell onClick={handleSortSleep} style={{ cursor: 'pointer' }}>
                 Avg Sleep
               </TableCell>
             </tr>
