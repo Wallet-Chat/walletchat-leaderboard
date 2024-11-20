@@ -67,8 +67,8 @@ function Dashboard() {
   // Function to sort data based on Avg Sleep
   const sortDataAvgSleep = (data: any[]) => {
     return data.sort((a, b) => {
-      const avgSleepA = a?.AvgSleep || 0;
-      const avgSleepB = b?.AvgSleep || 0;
+      const avgSleepA = a?.AvgSleep ? parseFloat(a.AvgSleep) : 0;
+      const avgSleepB = b?.AvgSleep ? parseFloat(b.AvgSleep) : 0;
       return sortDirection === 'asc' ? avgSleepA - avgSleepB : avgSleepB - avgSleepA;
     });
   };
@@ -117,9 +117,15 @@ function Dashboard() {
             <tr>
               <TableCell>Users</TableCell>
               <TableCell onClick={handleSortPoints} style={{ cursor: 'pointer' }}>
-                Points</TableCell>
+                <div style={{ textAlign: 'center' }}>
+                  Points
+                </div>
+              </TableCell>
               <TableCell onClick={handleSortSleep} style={{ cursor: 'pointer' }}>
-                Avg Sleep
+                 <div style={{ textAlign: 'center' }}>
+                    7 Day <br />
+                    Avg Sleep
+                 </div>
               </TableCell>
             </tr>
           </TableHeader>
@@ -146,8 +152,8 @@ function Dashboard() {
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell><span className="text-sm">{user?.TotalPoints}</span></TableCell>
-                  <TableCell><span className="text-sm">{user?.AvgSleep}</span></TableCell>
+                  <TableCell style={{ textAlign: 'center' }}><span className="text-sm">{user?.TotalPoints}</span></TableCell>
+                  <TableCell style={{ textAlign: 'center' }}><span className="text-sm">{parseFloat(user?.AvgSleep).toFixed(2)}</span></TableCell>
                 </TableRow>
               ))
             )}
