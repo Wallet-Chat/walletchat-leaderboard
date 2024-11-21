@@ -36,18 +36,26 @@ function Header() {
         </button> */}
         {/* <!-- Search input --> */}
         <div className="flex flex-1 items-center lg:mr-32">
-          <Avatar
-            className="align-middle"
-            src="https://uploads-ssl.webflow.com/62d761bae8bf2da003f57b06/62d761bae8bf2dea68f57b52_walletchat%20logo.png"
-            alt=""
-            aria-hidden="true"
-          />
+          <div className="flex items-center">
+            <img
+              src="https://walletchat-pfp-storage.sgp1.digitaloceanspaces.com/intra.png"
+              alt=""
+              style={{ maxWidth: '100px', height: 'auto', alignSelf: 'center' }}
+            />
+            <h1 className="md:text-m text-m text-white font-bold mx-4 flex items-center" style={{ fontFamily: 'Epilog, sans-serif' }}>
+              by
+            </h1>
+            <img
+              src="https://walletchat-pfp-storage.sgp1.digitaloceanspaces.com/biohackerDAO_dark.png"
+              alt=""
+              style={{ maxWidth: '200px', height: 'auto', alignSelf: 'center' }}
+            />
+          </div>
           <span
             className={`text-lg ${
               mode === "dark" ? "text-white" : "text-black"
             } font-semibold pl-3`}
           >
-            IntraDAO
           </span>
         </div>
         <ul className="flex items-center flex-shrink-0 space-x-6">

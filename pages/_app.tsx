@@ -64,7 +64,7 @@ const connectors = connectorsForWallets([
         projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string,
         chains,
       }),
-      coinbaseWallet({ appName: "IntraDAO", chains }),
+      coinbaseWallet({ appName: "Intra", chains }),
     ],
   },
 ]);

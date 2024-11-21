@@ -1,2 +1,2 @@
 # intradao-leaderboard
- IntraDAO Leaderboard
+ Intra Leaderboard

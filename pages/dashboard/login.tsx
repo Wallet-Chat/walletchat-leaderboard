@@ -6,12 +6,20 @@ function LoginPage() {
     <main className="bg-[#091B18] min-h-screen flex flex-col items-center justify-center text-center">
       <div className="flex flex-col items-center mb-10">
         <img
-          className="rounded-full h-48 w-48 mb-10"
-          src="https://uploads-ssl.webflow.com/62d761bae8bf2da003f57b06/62d761bae8bf2dea68f57b52_walletchat%20logo.png"
+          src="https://walletchat-pfp-storage.sgp1.digitaloceanspaces.com/intra.png"
           alt=""
+          style={{ maxWidth: '250px', height: 'auto' }}
         />
-        <h1 className="md:text-6xl text-4xl text-white font-bold">
-          Intra Leaderboard
+         <h1 className="md:text-xl text-xl text-white font-bold" style={{ fontFamily: 'Epilog, sans-serif' }}>
+          in collaboration with
+        </h1>
+        <img
+          src="https://walletchat-pfp-storage.sgp1.digitaloceanspaces.com/biohackerDAO_dark.png"
+          alt=""
+          style={{ maxWidth: '400px', height: 'auto' }}
+        />
+        <h1 className="md:text-6xl text-4xl text-white font-bold" style={{ fontFamily: 'Epilog, sans-serif' }}>
+          Points Leaderboard
         </h1>
         <h2 className="text-white py-5">Connect your wallet to get started</h2>
         <ConnectButton />
