@@ -110,12 +110,76 @@ function Dashboard() {
 
   return (
     <Layout>
-      <PageTitle>Welcome, {connectedWalletData?.Username}</PageTitle>
-      <TableContainer>
+      <PageTitle>Welcome, {connectedWalletData?.Wallet}</PageTitle>
+<TableContainer>
+  <Table
+    className="border border-green-400 rounded-md"
+    style={{
+      backgroundColor: "rgba(144, 238, 144, 0.2)", // light green with transparency
+      marginBottom: "20px", // space separation between tables
+    }}
+  >
+    <TableHeader>
+      <tr>
+        <TableCell>Connected Wallet</TableCell>
+        <TableCell style={{ textAlign: "center" }}>Points</TableCell>
+        <TableCell style={{ textAlign: "center" }}>7 Day Avg Sleep</TableCell>
+      </tr>
+        </TableHeader>
+          <TableBody>
+            {!connectedWalletData ? (
+              <TableRow>
+                <TableCell>
+                  <Skeleton />
+                </TableCell>
+                <TableCell>
+                  <Skeleton />
+                </TableCell>
+                <TableCell>
+                  <Skeleton />
+                </TableCell>
+              </TableRow>
+            ) : (
+              <TableRow>
+                <TableCell>
+                  <div className="flex items-center text-sm">
+                    {connectedWalletData?.Pfpdata ? (
+                      <Avatar
+                        className="mr-3 md:block"
+                        src={connectedWalletData.Pfpdata}
+                        alt="User image"
+                      />
+                    ) : (
+                      <OutlinePersonIcon className="w-8 h-8 mr-3" />
+                    )}
+                    <div>
+                      <p className="font-semibold">{connectedWalletData?.Wallet}</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">
+                        {connectedWalletData?.Walletaddr}
+                      </p>
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell style={{ textAlign: "center" }}>
+                  <span className="text-sm">{connectedWalletData?.TotalPoints}</span>
+                </TableCell>
+                <TableCell style={{ textAlign: "center" }}>
+                  <span className="text-sm">
+                    {connectedWalletData?.AvgSleep
+                      ? parseFloat(connectedWalletData.AvgSleep).toFixed(2)
+                      : "N/A"}
+                  </span>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+
+      <div style={{ marginBottom: "20px" }} />
         <Table>
           <TableHeader>
             <tr>
-              <TableCell>Users</TableCell>
+              <TableCell>User Wallet</TableCell>
               <TableCell onClick={handleSortPoints} style={{ cursor: 'pointer' }}>
                 <div style={{ textAlign: 'center' }}>
                   Points
