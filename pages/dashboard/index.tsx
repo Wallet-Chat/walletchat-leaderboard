@@ -139,8 +139,9 @@ function Dashboard() {
           method: 'GET'
         });
         const data = await response.json();
-        setName(data[0]?.name); // Get the name from the first element of the array if it exists
-        setTempName(data[0]?.name); // Set the temporary name as well
+        const fetchedName = data[0]?.name; // Get the name from the first element of the array if it exists
+        setName(fetchedName || `${connectedWalletData.Wallet.slice(0, 6)}...${connectedWalletData.Wallet.slice(-4)}`); // Use shortened wallet address if name is empty
+        setTempName(fetchedName || `${connectedWalletData.Wallet.slice(0, 6)}...${connectedWalletData.Wallet.slice(-4)}`); // Set the temporary name as well
       }
     };
 
