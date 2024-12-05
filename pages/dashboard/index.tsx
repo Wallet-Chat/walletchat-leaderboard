@@ -61,6 +61,10 @@ function Dashboard() {
   const [data, setData] = useState<any[]>([]);
   const { leaderboard, connectedWalletData } = useAppContext();
 
+  const [name, setName] = useState(connectedWalletData?.Wallet || "");
+  const [editing, setEditing] = useState(false);
+  const [tempName, setTempName] = useState(name); // Temporary state for name editing
+
   // Pagination setup
   const resultsPerPage = 10;
 
@@ -105,12 +109,73 @@ function Dashboard() {
     setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
   };
 
+  // Function to handle name change
+  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTempName(event.target.value); // Update temporary name
+  };
+
+  // Function to save the name
+  const handleSaveName = async () => {
+    setName(tempName); // Update the main name state
+    setEditing(false); // Exit editing mode
+
+    // Send updated name to the API
+    await fetch(`https://api.v2.walletchat.fun/name`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: tempName,
+        address: connectedWalletData?.Wallet // Use the wallet address from connectedWalletData
+      }),
+    });
+  };
+
+  useEffect(() => {
+    const fetchName = async () => {
+      if (connectedWalletData?.Wallet) {
+        const response = await fetch(`https://api.v2.walletchat.fun/name/${connectedWalletData.Wallet}`, {
+          method: 'GET'
+        });
+        const data = await response.json();
+        setName(data[0]?.name); // Get the name from the first element of the array if it exists
+        setTempName(data[0]?.name); // Set the temporary name as well
+      }
+    };
+
+    // Check if connectedWalletData is available before fetching
+    if (connectedWalletData) {
+      fetchName();
+    }
+  }, [connectedWalletData]); // Fetch name when connectedWalletData changes
+
   // Ensure that the loading state is handled properly
   if (!connectedWalletData) return <LoginPage />;
 
   return (
     <Layout>
-      <PageTitle>Welcome, {connectedWalletData?.Wallet}</PageTitle>
+      <PageTitle>
+        <div className="flex items-center">
+          <span className="mr-2">Welcome, {name}</span>
+          <button onClick={() => setEditing(true)} className="text-gray-400 hover:text-gray-600"> {/* More transparent gray */}
+            ✏️ {/* Edit icon */}
+          </button>
+        </div>
+        {editing && (
+          <div className="flex items-center mt-2">
+            <input 
+              type="text" 
+              value={tempName} // Use temporary name
+              onChange={handleNameChange} 
+              className="border rounded p-1 mr-2 bg-white text-black" // Improved visibility
+            />
+            <button onClick={handleSaveName} className="bg-blue-500 text-white rounded p-1">
+              Save
+            </button>
+          </div>
+        )}
+      </PageTitle>
 <TableContainer>
   <Table
     className="border border-green-400 rounded-md"
@@ -180,6 +245,7 @@ function Dashboard() {
           <TableHeader>
             <tr>
               <TableCell>User Wallet</TableCell>
+              <TableCell style={{ textAlign: 'center' }}>Name</TableCell>
               <TableCell onClick={handleSortPoints} style={{ cursor: 'pointer' }}>
                 <div style={{ textAlign: 'center' }}>
                   Points
@@ -196,6 +262,7 @@ function Dashboard() {
           <TableBody>
             {data.length === 0 ? (
               <TableRow>
+                <TableCell><Skeleton /></TableCell>
                 <TableCell><Skeleton /></TableCell>
                 <TableCell><Skeleton /></TableCell>
                 <TableCell><Skeleton /></TableCell>
@@ -216,6 +283,7 @@ function Dashboard() {
                       </div>
                     </div>
                   </TableCell>
+                  <TableCell style={{ textAlign: 'center' }}><span className="text-sm">{user?.Name}</span></TableCell>
                   <TableCell style={{ textAlign: 'center' }}><span className="text-sm">{user?.TotalPoints}</span></TableCell>
                   <TableCell style={{ textAlign: 'center' }}><span className="text-sm">{parseFloat(user?.AvgSleep).toFixed(2)}</span></TableCell>
                 </TableRow>
