@@ -57,16 +57,50 @@ function Dashboard() {
 
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [lastSortedColumn, setLastSortedColumn] = useState<'AvgSleep' | 'Points'>('AvgSleep');
+  const [code, setCode] = useState(1);
   const [page, setPage] = useState(1);
   const [data, setData] = useState<any[]>([]);
-  const { leaderboard, connectedWalletData } = useAppContext();
+  const { leaderboard, connectedWalletData, referralCodes } = useAppContext();
 
   const [name, setName] = useState(connectedWalletData?.Wallet || "");
   const [editing, setEditing] = useState(false);
   const [tempName, setTempName] = useState(name); // Temporary state for name editing
+  
+  const [referralCodesData, setReferralCodesData] = useState<string[]>([]);
 
-  // Pagination setup
+    // pagination setup
   const resultsPerPage = 10;
+  const totalResults = leaderboard.length;
+
+  // referral code pagination setup
+  const codePerPage = 5;
+  const totalCodes = referralCodes.length;
+
+  const copyCode = (code: string) => {
+    const input = document.createElement("input");
+    input.value = code;
+
+    document.body.appendChild(input);
+
+    input.select();
+    input.setSelectionRange(0, 99999);
+
+    document.execCommand("copy");
+
+    document.body.removeChild(input);
+
+    toast.success(`${code} copied to clipboard`);
+  };
+
+  // pagination change control
+  function onPageChange(p: number) {
+    setPage(p);
+  }
+
+  function onCodeChange(p: number) {
+    setCode(p);
+  }
+
 
   // Function to sort data based on Avg Sleep
   const sortDataAvgSleep = (data: any[]) => {
@@ -95,7 +129,10 @@ function Dashboard() {
       sortedData = sortDataAvgSleep([...leaderboard.slice((page - 1) * resultsPerPage, page * resultsPerPage)]);
     }
     setData(sortedData);
-  }, [page, leaderboard, sortDirection, lastSortedColumn]);
+    setReferralCodesData(
+      referralCodes.slice((code - 1) * codePerPage, code * codePerPage)
+    );
+  }, [page, code, referralCodes,leaderboard, sortDirection, lastSortedColumn]);
 
   // Function to handle sorting when the Points header is clicked
   const handleSortPoints = () => {
@@ -177,130 +214,194 @@ function Dashboard() {
           </div>
         )}
       </PageTitle>
-<TableContainer>
-  <Table
-    className="border border-green-400 rounded-md"
-    style={{
-      backgroundColor: "rgba(144, 238, 144, 0.2)", // light green with transparency
-      marginBottom: "20px", // space separation between tables
-    }}
-  >
-    <TableHeader>
-      <tr>
-        <TableCell>Connected Wallet</TableCell>
-        <TableCell style={{ textAlign: "center" }}>Points</TableCell>
-        <TableCell style={{ textAlign: "center" }}>7 Day Avg Sleep</TableCell>
-      </tr>
+      <div className="flex">
+        <div className="w-2/3"> {/* Adjust width as necessary */}
+          <TableContainer>
+            <Table>
+              <TableHeader>
+                <tr>
+                  <TableCell>Connected Wallet</TableCell>
+                  <TableCell style={{ textAlign: "center" }}>Points</TableCell>
+                  <TableCell style={{ textAlign: "center" }}>7 Day Avg Sleep</TableCell>
+                </tr>
+              </TableHeader>
+              <TableBody>
+                {!connectedWalletData ? (
+                  <TableRow>
+                    <TableCell>
+                      <Skeleton />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton />
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  <TableRow>
+                    <TableCell>
+                      <div className="flex items-center text-sm">
+                        {connectedWalletData?.Pfpdata ? (
+                          <Avatar
+                            className="mr-3 md:block"
+                            src={connectedWalletData.Pfpdata}
+                            alt="User image"
+                          />
+                        ) : (
+                          <OutlinePersonIcon className="w-8 h-8 mr-3" />
+                        )}
+                        <div>
+                          <p className="font-semibold">{connectedWalletData?.Wallet}</p>
+                          <p className="text-xs text-gray-600 dark:text-gray-400">
+                            {connectedWalletData?.Walletaddr}
+                          </p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell style={{ textAlign: "center" }}>
+                      <span className="text-sm">{connectedWalletData?.TotalPoints}</span>
+                    </TableCell>
+                    <TableCell style={{ textAlign: "center" }}>
+                      <span className="text-sm">
+                        {connectedWalletData?.AvgSleep
+                          ? parseFloat(connectedWalletData.AvgSleep).toFixed(2)
+                          : "N/A"}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </div>
+        
+        <div className="w-1/3 ml-5"> {/* Adjust width as necessary */}
+          <TableContainer>
+            <Table>
+              <TableHeader>
+                <tr>
+                  <TableCell>Referral Codes</TableCell>
+                  <TableCell>Status</TableCell>
+                </tr>
+              </TableHeader>
+              <TableBody>
+                {referralCodesData.length === 0 ? (
+                  <TableRow>
+                    <TableCell>
+                      <Skeleton />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton />
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  referralCodesData?.map((user: any, i: any) => (
+                    <TableRow className="h-12" key={i}>
+                      <TableCell>
+                        <div className="flex items-center text-sm">
+                          <div className="flex">
+                            <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">
+                              {user?.redeemed === true ? (
+                                <s>{user?.code}</s>
+                              ) : (
+                                <>{user?.code}</>
+                              )}
+                            </p>
+                            {user?.redeemed === false && (
+                              <div onClick={() => copyCode(user?.code)}>
+                                <CopyIcon className="h-5 w-5 ml-3 cursor-pointer" />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center text-sm">
+                          <div>
+                            <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">
+                              {user?.redeemed === true
+                                ? "Redeemed"
+                                : "Not Redeemed"}
+                            </p>
+                          </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+            <TableFooter>
+              <Pagination
+                totalResults={totalCodes}
+                resultsPerPage={codePerPage}
+                label="Table navigation"
+                onChange={onCodeChange}
+              />
+            </TableFooter>
+          </TableContainer>
+        </div>
+      </div>
+      <div style={{ marginBottom: "20px" }} />
+      <Table>
+        <TableHeader>
+          <tr>
+            <TableCell>User Wallet</TableCell>
+            <TableCell style={{ textAlign: 'center' }}>Name</TableCell>
+            <TableCell onClick={handleSortPoints} style={{ cursor: 'pointer' }}>
+              <div style={{ textAlign: 'center' }}>
+                Points
+              </div>
+            </TableCell>
+            <TableCell onClick={handleSortSleep} style={{ cursor: 'pointer' }}>
+               <div style={{ textAlign: 'center' }}>
+                  7 Day <br />
+                  Avg Sleep
+               </div>
+            </TableCell>
+          </tr>
         </TableHeader>
-          <TableBody>
-            {!connectedWalletData ? (
-              <TableRow>
-                <TableCell>
-                  <Skeleton />
-                </TableCell>
-                <TableCell>
-                  <Skeleton />
-                </TableCell>
-                <TableCell>
-                  <Skeleton />
-                </TableCell>
-              </TableRow>
-            ) : (
-              <TableRow>
+        <TableBody>
+          {data.length === 0 ? (
+            <TableRow>
+              <TableCell><Skeleton /></TableCell>
+              <TableCell><Skeleton /></TableCell>
+              <TableCell><Skeleton /></TableCell>
+              <TableCell><Skeleton /></TableCell>
+            </TableRow>
+          ) : (
+            data.map((user: any, i: any) => (
+              <TableRow key={i}>
                 <TableCell>
                   <div className="flex items-center text-sm">
-                    {connectedWalletData?.Pfpdata ? (
-                      <Avatar
-                        className="mr-3 md:block"
-                        src={connectedWalletData.Pfpdata}
-                        alt="User image"
-                      />
+                    {user?.Pfpdata ? (
+                      <Avatar className="mr-3 md:block" src={user?.Pfpdata} alt="User image" />
                     ) : (
                       <OutlinePersonIcon className="w-8 h-8 mr-3" />
                     )}
                     <div>
-                      <p className="font-semibold">{connectedWalletData?.Wallet}</p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">
-                        {connectedWalletData?.Walletaddr}
-                      </p>
+                      <p className="font-semibold">{user?.Wallet}</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">{user?.Walletaddr}</p>
                     </div>
                   </div>
                 </TableCell>
-                <TableCell style={{ textAlign: "center" }}>
-                  <span className="text-sm">{connectedWalletData?.TotalPoints}</span>
-                </TableCell>
-                <TableCell style={{ textAlign: "center" }}>
-                  <span className="text-sm">
-                    {connectedWalletData?.AvgSleep
-                      ? parseFloat(connectedWalletData.AvgSleep).toFixed(2)
-                      : "N/A"}
-                  </span>
-                </TableCell>
+                <TableCell style={{ textAlign: 'center' }}><span className="text-sm">{user?.Name}</span></TableCell>
+                <TableCell style={{ textAlign: 'center' }}><span className="text-sm">{user?.TotalPoints}</span></TableCell>
+                <TableCell style={{ textAlign: 'center' }}><span className="text-sm">{parseFloat(user?.AvgSleep).toFixed(2)}</span></TableCell>
               </TableRow>
-            )}
-          </TableBody>
-        </Table>
-
-      <div style={{ marginBottom: "20px" }} />
-        <Table>
-          <TableHeader>
-            <tr>
-              <TableCell>User Wallet</TableCell>
-              <TableCell style={{ textAlign: 'center' }}>Name</TableCell>
-              <TableCell onClick={handleSortPoints} style={{ cursor: 'pointer' }}>
-                <div style={{ textAlign: 'center' }}>
-                  Points
-                </div>
-              </TableCell>
-              <TableCell onClick={handleSortSleep} style={{ cursor: 'pointer' }}>
-                 <div style={{ textAlign: 'center' }}>
-                    7 Day <br />
-                    Avg Sleep
-                 </div>
-              </TableCell>
-            </tr>
-          </TableHeader>
-          <TableBody>
-            {data.length === 0 ? (
-              <TableRow>
-                <TableCell><Skeleton /></TableCell>
-                <TableCell><Skeleton /></TableCell>
-                <TableCell><Skeleton /></TableCell>
-                <TableCell><Skeleton /></TableCell>
-              </TableRow>
-            ) : (
-              data.map((user: any, i: any) => (
-                <TableRow key={i}>
-                  <TableCell>
-                    <div className="flex items-center text-sm">
-                      {user?.Pfpdata ? (
-                        <Avatar className="mr-3 md:block" src={user?.Pfpdata} alt="User image" />
-                      ) : (
-                        <OutlinePersonIcon className="w-8 h-8 mr-3" />
-                      )}
-                      <div>
-                        <p className="font-semibold">{user?.Wallet}</p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">{user?.Walletaddr}</p>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell style={{ textAlign: 'center' }}><span className="text-sm">{user?.Name}</span></TableCell>
-                  <TableCell style={{ textAlign: 'center' }}><span className="text-sm">{user?.TotalPoints}</span></TableCell>
-                  <TableCell style={{ textAlign: 'center' }}><span className="text-sm">{parseFloat(user?.AvgSleep).toFixed(2)}</span></TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-        <TableFooter>
-          <Pagination
-            totalResults={leaderboard.length}
-            resultsPerPage={resultsPerPage}
-            label="Table navigation"
-            onChange={setPage}
-          />
-        </TableFooter>
-      </TableContainer>
+            ))
+          )}
+        </TableBody>
+      </Table>
+      <TableFooter>
+        <Pagination
+          totalResults={leaderboard.length}
+          resultsPerPage={resultsPerPage}
+          label="Table navigation"
+          onChange={setPage}
+        />
+      </TableFooter>
     </Layout>
   );
 }
