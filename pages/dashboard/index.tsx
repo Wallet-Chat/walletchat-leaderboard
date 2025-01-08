@@ -40,7 +40,6 @@ import CTA from "dashboard/components/CTA";
 import Layout from "dashboard/containers/Layout";
 import RoundIcon from "dashboard/components/RoundIcon";
 import { useAccount } from "wagmi";
-import LoginPage from "./login";
 import { useAppContext } from "context/AppContext";
 
 function Dashboard() {
@@ -187,9 +186,6 @@ function Dashboard() {
       fetchName();
     }
   }, [connectedWalletData]); // Fetch name when connectedWalletData changes
-
-  // Ensure that the loading state is handled properly
-  if (!connectedWalletData) return <LoginPage />;
 
   return (
     <Layout>
