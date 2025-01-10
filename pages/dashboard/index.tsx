@@ -191,10 +191,10 @@ function Dashboard() {
     <Layout>
       <PageTitle>
         <div className="flex items-center">
-          <span className="mr-2">Welcome, {name}</span>
-          <button onClick={() => setEditing(true)} className="text-gray-400 hover:text-gray-600"> {/* More transparent gray */}
-            ✏️ {/* Edit icon */}
-          </button>
+          <span className="mr-2">Welcome {name}</span>
+          {/* <button onClick={() => setEditing(true)} className="text-gray-400 hover:text-gray-600"> {/* More transparent gray */}
+          {/*   ✏️ {/* Edit icon */}
+          {/* </button> */}
         </div>
         {editing && (
           <div className="flex items-center mt-2">
@@ -211,133 +211,133 @@ function Dashboard() {
         )}
       </PageTitle>
       <div className="flex">
-        <div className="w-2/3"> {/* Adjust width as necessary */}
-          <TableContainer>
-            <Table>
-              <TableHeader>
-                <tr>
-                  <TableCell>Connected Wallet</TableCell>
-                  <TableCell style={{ textAlign: "center" }}>Points</TableCell>
-                  <TableCell style={{ textAlign: "center" }}>7 Day Avg Sleep</TableCell>
-                </tr>
-              </TableHeader>
-              <TableBody>
-                {!connectedWalletData ? (
-                  <TableRow>
-                    <TableCell>
-                      <Skeleton />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton />
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  <TableRow>
-                    <TableCell>
-                      <div className="flex items-center text-sm">
-                        {connectedWalletData?.Pfpdata ? (
-                          <Avatar
-                            className="mr-3 md:block"
-                            src={connectedWalletData.Pfpdata}
-                            alt="User image"
-                          />
-                        ) : (
-                          <OutlinePersonIcon className="w-8 h-8 mr-3" />
-                        )}
-                        <div>
-                          <p className="font-semibold">{connectedWalletData?.Wallet}</p>
-                          <p className="text-xs text-gray-600 dark:text-gray-400">
-                            {connectedWalletData?.Walletaddr}
-                          </p>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell style={{ textAlign: "center" }}>
-                      <span className="text-sm">{connectedWalletData?.TotalPoints}</span>
-                    </TableCell>
-                    <TableCell style={{ textAlign: "center" }}>
-                      <span className="text-sm">
-                        {connectedWalletData?.AvgSleep
-                          ? parseFloat(connectedWalletData.AvgSleep).toFixed(2)
-                          : "N/A"}
-                      </span>
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </div>
+        {/* <div className="w-2/3"> {/* Adjust width as necessary */}
+        {/*   <TableContainer> */}
+        {/*     <Table> */}
+        {/*       <TableHeader> */}
+        {/*         <tr> */}
+        {/*           <TableCell>Connected Wallet</TableCell> */}
+        {/*           <TableCell style={{ textAlign: "center" }}>Points</TableCell> */}
+        {/*           <TableCell style={{ textAlign: "center" }}>7 Day Avg Sleep</TableCell> */}
+        {/*         </tr> */}
+        {/*       </TableHeader> */}
+        {/*       <TableBody> */}
+        {/*         {!connectedWalletData ? ( */}
+        {/*           <TableRow> */}
+        {/*             <TableCell> */}
+        {/*               <Skeleton /> */}
+        {/*             </TableCell> */}
+        {/*             <TableCell> */}
+        {/*               <Skeleton /> */}
+        {/*             </TableCell> */}
+        {/*             <TableCell> */}
+        {/*               <Skeleton /> */}
+        {/*             </TableCell> */}
+        {/*           </TableRow> */}
+        {/*         ) : ( */}
+        {/*           <TableRow> */}
+        {/*             <TableCell> */}
+        {/*               <div className="flex items-center text-sm"> */}
+        {/*                 {connectedWalletData?.Pfpdata ? ( */}
+        {/*                   <Avatar */}
+        {/*                     className="mr-3 md:block" */}
+        {/*                     src={connectedWalletData.Pfpdata} */}
+        {/*                     alt="User image" */}
+        {/*                   /> */}
+        {/*                 ) : ( */}
+        {/*                   <OutlinePersonIcon className="w-8 h-8 mr-3" /> */}
+        {/*                 )} */}
+        {/*                 <div> */}
+        {/*                   <p className="font-semibold">{connectedWalletData?.Wallet}</p> */}
+        {/*                   <p className="text-xs text-gray-600 dark:text-gray-400"> */}
+        {/*                     {connectedWalletData?.Walletaddr} */}
+        {/*                   </p> */}
+        {/*                 </div> */}
+        {/*               </div> */}
+        {/*             </TableCell> */}
+        {/*             <TableCell style={{ textAlign: "center" }}> */}
+        {/*               <span className="text-sm">{connectedWalletData?.TotalPoints}</span> */}
+        {/*             </TableCell> */}
+        {/*             <TableCell style={{ textAlign: "center" }}> */}
+        {/*               <span className="text-sm"> */}
+        {/*                 {connectedWalletData?.AvgSleep */}
+        {/*                   ? parseFloat(connectedWalletData.AvgSleep).toFixed(2) */}
+        {/*                   : "N/A"} */}
+        {/*               </span> */}
+        {/*             </TableCell> */}
+        {/*           </TableRow> */}
+        {/*         )} */}
+        {/*       </TableBody> */}
+        {/*     </Table> */}
+        {/*   </TableContainer> */}
+        {/* </div> */}
         
-        <div className="w-1/3 ml-5"> {/* Adjust width as necessary */}
-          <TableContainer>
-            <Table>
-              <TableHeader>
-                <tr>
-                  <TableCell>Referral Codes</TableCell>
-                  <TableCell>Status</TableCell>
-                </tr>
-              </TableHeader>
-              <TableBody>
-                {referralCodesData.length === 0 ? (
-                  <TableRow>
-                    <TableCell>
-                      <Skeleton />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton />
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  referralCodesData?.map((user: any, i: any) => (
-                    <TableRow className="h-12" key={i}>
-                      <TableCell>
-                        <div className="flex items-center text-sm">
-                          <div className="flex">
-                            <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">
-                              {user?.redeemed === true ? (
-                                <s>{user?.code}</s>
-                              ) : (
-                                <>{user?.code}</>
-                              )}
-                            </p>
-                            {user?.redeemed === false && (
-                              <div onClick={() => copyCode(user?.code)}>
-                                <CopyIcon className="h-5 w-5 ml-3 cursor-pointer" />
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center text-sm">
-                          <div>
-                            <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">
-                              {user?.redeemed === true
-                                ? "Redeemed"
-                                : "Not Redeemed"}
-                            </p>
-                          </div>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-            <TableFooter>
-              <Pagination
-                totalResults={totalCodes}
-                resultsPerPage={codePerPage}
-                label="Table navigation"
-                onChange={onCodeChange}
-              />
-            </TableFooter>
-          </TableContainer>
-        </div>
+        {/* <div className="w-1/3 ml-5"> {/* Adjust width as necessary */}
+        {/*   <TableContainer> */}
+        {/*     <Table> */}
+        {/*       <TableHeader> */}
+        {/*         <tr> */}
+        {/*           <TableCell>Referral Codes</TableCell> */}
+        {/*           <TableCell>Status</TableCell> */}
+        {/*         </tr> */}
+        {/*       </TableHeader> */}
+        {/*       <TableBody> */}
+        {/*         {referralCodesData.length === 0 ? ( */}
+        {/*           <TableRow> */}
+        {/*             <TableCell> */}
+        {/*               <Skeleton /> */}
+        {/*             </TableCell> */}
+        {/*             <TableCell> */}
+        {/*               <Skeleton /> */}
+        {/*             </TableCell> */}
+        {/*           </TableRow> */}
+        {/*         ) : ( */}
+        {/*           referralCodesData?.map((user: any, i: any) => ( */}
+        {/*             <TableRow className="h-12" key={i}> */}
+        {/*               <TableCell> */}
+        {/*                 <div className="flex items-center text-sm"> */}
+        {/*                   <div className="flex"> */}
+        {/*                     <p className="text-xs font-semibold text-gray-700 dark:text-gray-200"> */}
+        {/*                       {user?.redeemed === true ? ( */}
+        {/*                         <s>{user?.code}</s> */}
+        {/*                       ) : ( */}
+        {/*                         <>{user?.code}</> */}
+        {/*                       )} */}
+        {/*                     </p> */}
+        {/*                     {user?.redeemed === false && ( */}
+        {/*                       <div onClick={() => copyCode(user?.code)}> */}
+        {/*                         <CopyIcon className="h-5 w-5 ml-3 cursor-pointer" /> */}
+        {/*                       </div> */}
+        {/*                     )} */}
+        {/*                   </div> */}
+        {/*                 </div> */}
+        {/*               </TableCell> */}
+        {/*               <TableCell> */}
+        {/*                 <div className="flex items-center text-sm"> */}
+        {/*                   <div> */}
+        {/*                     <p className="text-xs font-semibold text-gray-700 dark:text-gray-200"> */}
+        {/*                       {user?.redeemed === true */}
+        {/*                         ? "Redeemed" */}
+        {/*                         : "Not Redeemed"} */}
+        {/*                     </p> */}
+        {/*                   </div> */}
+        {/*                 </div> */}
+        {/*               </TableCell> */}
+        {/*             </TableRow> */}
+        {/*           )) */}
+        {/*         )} */}
+        {/*       </TableBody> */}
+        {/*     </Table> */}
+        {/*     <TableFooter> */}
+        {/*       <Pagination */}
+        {/*         totalResults={totalCodes} */}
+        {/*         resultsPerPage={codePerPage} */}
+        {/*         label="Table navigation" */}
+        {/*         onChange={onCodeChange} */}
+        {/*       /> */}
+        {/*     </TableFooter> */}
+        {/*   </TableContainer> */}
+        {/* </div> */}
       </div>
       <div style={{ marginBottom: "20px" }} />
       <Table>

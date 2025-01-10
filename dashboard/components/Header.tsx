@@ -75,9 +75,9 @@ function Header() {
           </li>
           {/* <!-- Notifications menu --> */}
           <div className="relative">
-            <div className="px-4 py-2 rounded-lg bg-black text-white">
+            {/* <div className="px-4 py-2 rounded-lg bg-black text-white">
               {`${wagmiAddress?.slice(0, 7)}...${wagmiAddress?.slice(35)}`}
-            </div>
+            </div> */}
           </div>
           {/* <!-- Profile menu --> */}
           <li className="relative hidden lg:flex">
