@@ -191,7 +191,7 @@ function Dashboard() {
     <Layout>
       <PageTitle>
         <div className="flex items-center">
-          <span className="mr-2">Welcome {name}</span>
+          <span className="mr-2">Welcome  {name}</span>
           {/* <button onClick={() => setEditing(true)} className="text-gray-400 hover:text-gray-600"> {/* More transparent gray */}
           {/*   ✏️ {/* Edit icon */}
           {/* </button> */}
