@@ -377,8 +377,18 @@ function Dashboard() {
                       <OutlinePersonIcon className="w-8 h-8 mr-3" />
                     )}
                     <div>
-                      <p className="font-semibold">{user?.Wallet}</p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">{user?.Walletaddr}</p>
+                      <p className="font-semibold">
+                        <span className="hidden md:inline">{user?.Wallet}</span>
+                        <span className="inline md:hidden">
+                          {user?.Wallet ? `${user.Wallet.slice(0, 5)}...${user.Wallet.slice(-3)}` : ''}
+                        </span>
+                      </p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">
+                        <span className="hidden md:inline">{user?.Walletaddr}</span>
+                        <span className="inline md:hidden">
+                          {user?.Walletaddr ? `${user.Walletaddr.slice(0, 5)}...${user.Walletaddr.slice(-3)}` : ''}
+                        </span>
+                      </p>
                     </div>
                   </div>
                 </TableCell>
