@@ -7,6 +7,14 @@ import React, {
 } from "react";
 import { useAccount } from "wagmi";
 
+const getCookie = (name: string): string | undefined => {
+  if (typeof document === "undefined") return undefined;
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop()?.split(";").shift();
+  return undefined;
+};
+
 interface AppContextType {
   leaderboard: any[];
   referralCodes: string[];
@@ -29,12 +37,19 @@ export const AppContextProvider = ({ children }: Props) => {
   const [connectedWalletData, setConnectedWalletData] = useState();
   const [referralCodes, setReferralCodes] = useState<string[]>([]);
   const [loadingWalletData, setLoadingWalletData] = useState<boolean>(false);
+  const [cookieWalletAddress, setCookieWalletAddress] =
+    useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    const cookieAddr = getCookie("walletAddress");
+    if (cookieAddr) setCookieWalletAddress(cookieAddr);
+  }, []);
 
   useEffect(() => {
     fetchConnectedWalletData();
     fetchLeaderboard();
     fetchReferralCodes();
-  }, [isConnected]);
+  }, [isConnected, wagmiAddress, cookieWalletAddress]);
 
   /**
    * @dev to fetch leaderboard
@@ -42,19 +57,18 @@ export const AppContextProvider = ({ children }: Props) => {
   const fetchLeaderboard = async () => {
     try {
       let leaderboard;
-      // console.log("fetching leaderboard");
-      // Setup request options:
       var requestOptions = {
         method: "GET",
       };
-      const baseURL = `https://api.v2.walletchat.fun/get_oura_leaderboard_data`;
+      const baseURL = `${process.env.NEXT_PUBLIC_WALLETCHAT_API_URL}/get_intra_leaderboard_data`;
 
       leaderboard = await fetch(baseURL, requestOptions).then((data) =>
         data.json()
       );
 
+      console.log("leaderboard: ", leaderboard)
+
       if (leaderboard) {
-        // console.log(leaderboard);
         setLeaderboard(leaderboard);
       }
     } catch (error) {
@@ -64,21 +78,22 @@ export const AppContextProvider = ({ children }: Props) => {
 
   const fetchConnectedWalletData = async () => {
     try {
+      const wallet = wagmiAddress || cookieWalletAddress;
+      if (!wallet) return;
       let connectedWalletData;
-      // console.log("fetching connectedWalletData");
       setLoadingWalletData(true);
-      // Setup request options:
-      var requestOptions = {
+      const requestOptions = {
         method: "GET",
       };
-      const baseURL = `https://api.v2.walletchat.fun/get_oura_leaderboard_data/${wagmiAddress}`;
+      const baseURL = `${process.env.NEXT_PUBLIC_WALLETCHAT_API_URL}/get_intra_leaderboard_data/${wallet}`;
 
       connectedWalletData = await fetch(baseURL, requestOptions).then((data) =>
         data.json()
       );
 
+      console.log("Fetch Wallet Data: ", connectedWalletData)
+
       if (connectedWalletData) {
-        // console.log(connectedWalletData);
         setConnectedWalletData(connectedWalletData);
         setLoadingWalletData(false);
       }
@@ -88,13 +103,14 @@ export const AppContextProvider = ({ children }: Props) => {
   };
 
   const fetchReferralCodes = async () => {
+    const wallet = wagmiAddress || cookieWalletAddress;
+    if (!wallet) return;
     let referralCodes;
     console.log("fetching referralcodes");
-    // Setup request options:
-    var requestOptions = {
+    const requestOptions = {
       method: "GET",
     };
-    const baseURL = `https://api.v2.walletchat.fun/get_referral_code/${wagmiAddress}`;
+    const baseURL = `${process.env.NEXT_PUBLIC_WALLETCHAT_API_URL}/get_referral_code/${wallet}`;
 
     referralCodes = await fetch(baseURL, requestOptions).then((data) =>
       data.json()

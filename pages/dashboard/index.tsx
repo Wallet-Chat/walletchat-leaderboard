@@ -39,8 +39,23 @@ import PageTitle from "dashboard/components/Typography/PageTitle";
 import CTA from "dashboard/components/CTA";
 import Layout from "dashboard/containers/Layout";
 import RoundIcon from "dashboard/components/RoundIcon";
-import { useAccount } from "wagmi";
 import { useAppContext } from "context/AppContext";
+
+/**
+ * Helper component that enforces a four-column, fixed-layout table so
+ * every table that uses it shares identical column widths.
+ */
+const FourColumnTable: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <Table className="w-full table-fixed">
+    <colgroup>
+      <col style={{ width: '40%' }} />
+      <col style={{ width: '26.66%' }} />
+      <col style={{ width: '26.66%' }} />
+      <col style={{ width: '26.66%' }} />
+    </colgroup>
+    {children}
+  </Table>
+);
 
 function Dashboard() {
   Chart.register(
@@ -55,154 +70,116 @@ function Dashboard() {
   );
 
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-  const [lastSortedColumn, setLastSortedColumn] = useState<'AvgSleep' | 'Points'>('AvgSleep');
+  const [lastSortedColumn, setLastSortedColumn] = useState<'Tokens' | 'Num Uploads'>('Tokens');
   const [code, setCode] = useState(1);
   const [page, setPage] = useState(1);
   const [data, setData] = useState<any[]>([]);
   const { leaderboard, connectedWalletData, referralCodes } = useAppContext();
 
-  const [name, setName] = useState(connectedWalletData?.Wallet || "");
+  const [name, setName] = useState(connectedWalletData?.Wallet || '');
   const [editing, setEditing] = useState(false);
-  const [tempName, setTempName] = useState(name); // Temporary state for name editing
-  
+  const [tempName, setTempName] = useState(name);
+
   const [referralCodesData, setReferralCodesData] = useState<string[]>([]);
-
-    // pagination setup
   const resultsPerPage = 10;
-  const totalResults = leaderboard.length;
-
-  // referral code pagination setup
   const codePerPage = 5;
-  const totalCodes = referralCodes.length;
 
-  const copyCode = (code: string) => {
-    const input = document.createElement("input");
-    input.value = code;
-
+  const copyCode = (c: string) => {
+    const input = document.createElement('input');
+    input.value = c;
     document.body.appendChild(input);
-
     input.select();
-    input.setSelectionRange(0, 99999);
-
-    document.execCommand("copy");
-
+    document.execCommand('copy');
     document.body.removeChild(input);
-
-    toast.success(`${code} copied to clipboard`);
+    toast.success(`${c} copied to clipboard`);
   };
 
-  // pagination change control
-  function onPageChange(p: number) {
-    setPage(p);
-  }
+  const onPageChange = (p: number) => setPage(p);
+  const onCodeChange = (p: number) => setCode(p);
 
-  function onCodeChange(p: number) {
-    setCode(p);
-  }
-
-
-  // Function to sort data based on Avg Sleep
-  const sortDataAvgSleep = (data: any[]) => {
-    return data.sort((a, b) => {
-      const avgSleepA = a?.AvgSleep ? parseFloat(a.AvgSleep) : 0;
-      const avgSleepB = b?.AvgSleep ? parseFloat(b.AvgSleep) : 0;
-      return sortDirection === 'asc' ? avgSleepA - avgSleepB : avgSleepB - avgSleepA;
+  const sortDataTokens = (arr: any[]) =>
+    arr.sort((a, b) => {
+      const aVal = parseFloat(a.Tokens) || 0;
+      const bVal = parseFloat(b.Tokens) || 0;
+      return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
     });
-  };
 
-  // Function to sort data based on Points
-  const sortDataPoints = (data: any[]) => {
-    return data.sort((a, b) => {
-      const pointsA = a?.TotalPoints || 0;
-      const pointsB = b?.TotalPoints || 0;
-      return sortDirection === 'asc' ? pointsA - pointsB : pointsB - pointsA;
+  const sortDataNumUploads = (arr: any[]) =>
+    arr.sort((a, b) => {
+      const aVal = a.Numuploads || 0;
+      const bVal = b.Numuploads || 0;
+      return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
     });
-  };
 
-  // Update the useEffect to sort data when it changes
   useEffect(() => {
-    let sortedData;
-    if (lastSortedColumn === 'Points') {
-      sortedData = sortDataPoints([...leaderboard.slice((page - 1) * resultsPerPage, page * resultsPerPage)]);
+    let sorted;
+    const sliceData = leaderboard.slice((page - 1) * resultsPerPage, page * resultsPerPage);
+    if (lastSortedColumn === 'Num Uploads') {
+      sorted = sortDataNumUploads([...sliceData]);
     } else {
-      sortedData = sortDataAvgSleep([...leaderboard.slice((page - 1) * resultsPerPage, page * resultsPerPage)]);
+      sorted = sortDataTokens([...sliceData]);
     }
-    setData(sortedData);
+    setData(sorted);
     setReferralCodesData(
       referralCodes.slice((code - 1) * codePerPage, code * codePerPage)
     );
-  }, [page, code, referralCodes,leaderboard, sortDirection, lastSortedColumn]);
+  }, [page, code, referralCodes, leaderboard, sortDirection, lastSortedColumn]);
 
-  // Function to handle sorting when the Points header is clicked
-  const handleSortPoints = () => {
-    setLastSortedColumn('Points');
+  const handleSortNumUploads = () => {
+    setLastSortedColumn('Num Uploads');
     setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
   };
 
-  // Function to handle sorting when the Avg Sleep header is clicked
-  const handleSortSleep = () => {
-    setLastSortedColumn('AvgSleep');
+  const handleSortTokens = () => {
+    setLastSortedColumn('Tokens');
     setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
   };
 
-  // Function to handle name change
-  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTempName(event.target.value); // Update temporary name
-  };
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setTempName(e.target.value);
 
-  // Function to save the name
   const handleSaveName = async () => {
-    setName(tempName); // Update the main name state
-    setEditing(false); // Exit editing mode
-
-    // Send updated name to the API
-    await fetch(`https://api.v2.walletchat.fun/name`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        name: tempName,
-        address: connectedWalletData?.Wallet // Use the wallet address from connectedWalletData
-      }),
-    });
+    setName(tempName);
+    setEditing(false);
+    await fetch(
+      `${process.env.NEXT_PUBLIC_WALLETCHAT_API_URL}/name`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: tempName, address: connectedWalletData?.Wallet }),
+      }
+    );
   };
 
   useEffect(() => {
     const fetchName = async () => {
       if (connectedWalletData?.Wallet) {
-        const response = await fetch(`https://api.v2.walletchat.fun/name/${connectedWalletData.Wallet}`, {
-          method: 'GET'
-        });
-        const data = await response.json();
-        const fetchedName = data[0]?.name; // Get the name from the first element of the array if it exists
-        setName(fetchedName || `${connectedWalletData.Wallet.slice(0, 6)}...${connectedWalletData.Wallet.slice(-4)}`); // Use shortened wallet address if name is empty
-        setTempName(fetchedName || `${connectedWalletData.Wallet.slice(0, 6)}...${connectedWalletData.Wallet.slice(-4)}`); // Set the temporary name as well
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_WALLETCHAT_API_URL}/name/${connectedWalletData.Wallet}`
+        );
+        const d = await res.json();
+        const fetched = d[0]?.name;
+        const fallback = `${connectedWalletData.Wallet.slice(0, 6)}...${connectedWalletData.Wallet.slice(-4)}`;
+        setName(fetched || fallback);
+        setTempName(fetched || fallback);
       }
     };
-
-    // Check if connectedWalletData is available before fetching
-    if (connectedWalletData) {
-      fetchName();
-    }
-  }, [connectedWalletData]); // Fetch name when connectedWalletData changes
+    if (connectedWalletData) fetchName();
+  }, [connectedWalletData]);
 
   return (
     <Layout>
       <PageTitle>
         <div className="flex items-center">
-          <span className="mr-2">Welcome  {name}</span>
-          {/* <button onClick={() => setEditing(true)} className="text-gray-400 hover:text-gray-600"> {/* More transparent gray */}
-          {/*   ✏️ {/* Edit icon */}
-          {/* </button> */}
+          <span className="mr-2">Welcome {name}</span>
         </div>
         {editing && (
           <div className="flex items-center mt-2">
-            <input 
-              type="text" 
-              value={tempName} // Use temporary name
-              onChange={handleNameChange} 
-              className="border rounded p-1 mr-2 bg-white text-black" // Improved visibility
+            <input
+              type="text"
+              value={tempName}
+              onChange={handleNameChange}
+              className="border rounded p-1 mr-2 bg-white text-black"
             />
             <button onClick={handleSaveName} className="bg-blue-500 text-white rounded p-1">
               Save
@@ -210,196 +187,112 @@ function Dashboard() {
           </div>
         )}
       </PageTitle>
-      <div className="flex">
-        {/* <div className="w-2/3"> {/* Adjust width as necessary */}
-        {/*   <TableContainer> */}
-        {/*     <Table> */}
-        {/*       <TableHeader> */}
-        {/*         <tr> */}
-        {/*           <TableCell>Connected Wallet</TableCell> */}
-        {/*           <TableCell style={{ textAlign: "center" }}>Points</TableCell> */}
-        {/*           <TableCell style={{ textAlign: "center" }}>7 Day Avg Sleep</TableCell> */}
-        {/*         </tr> */}
-        {/*       </TableHeader> */}
-        {/*       <TableBody> */}
-        {/*         {!connectedWalletData ? ( */}
-        {/*           <TableRow> */}
-        {/*             <TableCell> */}
-        {/*               <Skeleton /> */}
-        {/*             </TableCell> */}
-        {/*             <TableCell> */}
-        {/*               <Skeleton /> */}
-        {/*             </TableCell> */}
-        {/*             <TableCell> */}
-        {/*               <Skeleton /> */}
-        {/*             </TableCell> */}
-        {/*           </TableRow> */}
-        {/*         ) : ( */}
-        {/*           <TableRow> */}
-        {/*             <TableCell> */}
-        {/*               <div className="flex items-center text-sm"> */}
-        {/*                 {connectedWalletData?.Pfpdata ? ( */}
-        {/*                   <Avatar */}
-        {/*                     className="mr-3 md:block" */}
-        {/*                     src={connectedWalletData.Pfpdata} */}
-        {/*                     alt="User image" */}
-        {/*                   /> */}
-        {/*                 ) : ( */}
-        {/*                   <OutlinePersonIcon className="w-8 h-8 mr-3" /> */}
-        {/*                 )} */}
-        {/*                 <div> */}
-        {/*                   <p className="font-semibold">{connectedWalletData?.Wallet}</p> */}
-        {/*                   <p className="text-xs text-gray-600 dark:text-gray-400"> */}
-        {/*                     {connectedWalletData?.Walletaddr} */}
-        {/*                   </p> */}
-        {/*                 </div> */}
-        {/*               </div> */}
-        {/*             </TableCell> */}
-        {/*             <TableCell style={{ textAlign: "center" }}> */}
-        {/*               <span className="text-sm">{connectedWalletData?.TotalPoints}</span> */}
-        {/*             </TableCell> */}
-        {/*             <TableCell style={{ textAlign: "center" }}> */}
-        {/*               <span className="text-sm"> */}
-        {/*                 {connectedWalletData?.AvgSleep */}
-        {/*                   ? parseFloat(connectedWalletData.AvgSleep).toFixed(2) */}
-        {/*                   : "N/A"} */}
-        {/*               </span> */}
-        {/*             </TableCell> */}
-        {/*           </TableRow> */}
-        {/*         )} */}
-        {/*       </TableBody> */}
-        {/*     </Table> */}
-        {/*   </TableContainer> */}
-        {/* </div> */}
-        
-        {/* <div className="w-1/3 ml-5"> {/* Adjust width as necessary */}
-        {/*   <TableContainer> */}
-        {/*     <Table> */}
-        {/*       <TableHeader> */}
-        {/*         <tr> */}
-        {/*           <TableCell>Referral Codes</TableCell> */}
-        {/*           <TableCell>Status</TableCell> */}
-        {/*         </tr> */}
-        {/*       </TableHeader> */}
-        {/*       <TableBody> */}
-        {/*         {referralCodesData.length === 0 ? ( */}
-        {/*           <TableRow> */}
-        {/*             <TableCell> */}
-        {/*               <Skeleton /> */}
-        {/*             </TableCell> */}
-        {/*             <TableCell> */}
-        {/*               <Skeleton /> */}
-        {/*             </TableCell> */}
-        {/*           </TableRow> */}
-        {/*         ) : ( */}
-        {/*           referralCodesData?.map((user: any, i: any) => ( */}
-        {/*             <TableRow className="h-12" key={i}> */}
-        {/*               <TableCell> */}
-        {/*                 <div className="flex items-center text-sm"> */}
-        {/*                   <div className="flex"> */}
-        {/*                     <p className="text-xs font-semibold text-gray-700 dark:text-gray-200"> */}
-        {/*                       {user?.redeemed === true ? ( */}
-        {/*                         <s>{user?.code}</s> */}
-        {/*                       ) : ( */}
-        {/*                         <>{user?.code}</> */}
-        {/*                       )} */}
-        {/*                     </p> */}
-        {/*                     {user?.redeemed === false && ( */}
-        {/*                       <div onClick={() => copyCode(user?.code)}> */}
-        {/*                         <CopyIcon className="h-5 w-5 ml-3 cursor-pointer" /> */}
-        {/*                       </div> */}
-        {/*                     )} */}
-        {/*                   </div> */}
-        {/*                 </div> */}
-        {/*               </TableCell> */}
-        {/*               <TableCell> */}
-        {/*                 <div className="flex items-center text-sm"> */}
-        {/*                   <div> */}
-        {/*                     <p className="text-xs font-semibold text-gray-700 dark:text-gray-200"> */}
-        {/*                       {user?.redeemed === true */}
-        {/*                         ? "Redeemed" */}
-        {/*                         : "Not Redeemed"} */}
-        {/*                     </p> */}
-        {/*                   </div> */}
-        {/*                 </div> */}
-        {/*               </TableCell> */}
-        {/*             </TableRow> */}
-        {/*           )) */}
-        {/*         )} */}
-        {/*       </TableBody> */}
-        {/*     </Table> */}
-        {/*     <TableFooter> */}
-        {/*       <Pagination */}
-        {/*         totalResults={totalCodes} */}
-        {/*         resultsPerPage={codePerPage} */}
-        {/*         label="Table navigation" */}
-        {/*         onChange={onCodeChange} */}
-        {/*       /> */}
-        {/*     </TableFooter> */}
-        {/*   </TableContainer> */}
-        {/* </div> */}
-      </div>
-      <div style={{ marginBottom: "20px" }} />
-      <Table>
-        <TableHeader>
-          <tr>
-            <TableCell>User Wallet</TableCell>
-            <TableCell style={{ textAlign: 'center' }}>Name</TableCell>
-            <TableCell onClick={handleSortPoints} style={{ cursor: 'pointer' }}>
-              <div style={{ textAlign: 'center' }}>
-                Points
-              </div>
-            </TableCell>
-            <TableCell onClick={handleSortSleep} style={{ cursor: 'pointer' }}>
-               <div style={{ textAlign: 'center' }}>
-                  7 Day <br />
-                  Avg Sleep
-               </div>
-            </TableCell>
-          </tr>
-        </TableHeader>
-        <TableBody>
-          {data.length === 0 ? (
-            <TableRow>
-              <TableCell><Skeleton /></TableCell>
-              <TableCell><Skeleton /></TableCell>
-              <TableCell><Skeleton /></TableCell>
-              <TableCell><Skeleton /></TableCell>
-            </TableRow>
-          ) : (
-            data.map((user: any, i: any) => (
-              <TableRow key={i}>
-                <TableCell>
-                  <div className="flex items-center text-sm">
-                    {user?.Pfpdata ? (
-                      <Avatar className="mr-3 md:block" src={user?.Pfpdata} alt="User image" />
-                    ) : (
-                      <OutlinePersonIcon className="w-8 h-8 mr-3" />
-                    )}
-                    <div>
-                      <p className="font-semibold">
-                        <span className="hidden md:inline">{user?.Wallet}</span>
-                        <span className="inline md:hidden">
-                          {user?.Wallet ? `${user.Wallet.slice(0, 5)}...${user.Wallet.slice(-3)}` : ''}
-                        </span>
-                      </p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">
-                        <span className="hidden md:inline">{user?.Walletaddr}</span>
-                        <span className="inline md:hidden">
-                          {user?.Walletaddr ? `${user.Walletaddr.slice(0, 5)}...${user.Walletaddr.slice(-3)}` : ''}
-                        </span>
-                      </p>
+
+      <div className="mb-4">
+        <TableContainer>
+          <FourColumnTable>
+            <TableHeader>
+              <tr>
+                <TableCell className="align-middle">Connected Wallet</TableCell>
+                <TableCell className="align-middle text-center">Name</TableCell>
+                <TableCell className="align-middle text-center">Num Uploads</TableCell>
+                <TableCell className="align-middle text-center">Intra Tokens</TableCell>
+              </tr>
+            </TableHeader>
+            <TableBody>
+              {!connectedWalletData ? (
+                <TableRow>
+                  <TableCell><Skeleton /></TableCell>
+                  <TableCell><Skeleton /></TableCell>
+                  <TableCell><Skeleton /></TableCell>
+                  <TableCell><Skeleton /></TableCell>
+                </TableRow>
+              ) : (
+                <TableRow className="bg-yellow-100">
+                  <TableCell>
+                    <div className="flex items-center text-sm">
+                      {connectedWalletData.Pfpdata ? (
+                        <Avatar className="mr-3 md:block" src={connectedWalletData.Pfpdata} alt="User image" />
+                      ) : (
+                        <OutlinePersonIcon className="w-8 h-8 mr-3" />
+                      )}
+                      <div>
+                        <p className="font-semibold">
+                          <span className="hidden md:inline">{connectedWalletData.Wallet}</span>
+                          <span className="inline md:hidden">
+                            {`${connectedWalletData.Wallet.slice(0,5)}...${connectedWalletData.Wallet.slice(-3)}`}
+                          </span>
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </TableCell>
-                <TableCell style={{ textAlign: 'center' }}><span className="text-sm">{user?.Name}</span></TableCell>
-                <TableCell style={{ textAlign: 'center' }}><span className="text-sm">{user?.TotalPoints}</span></TableCell>
-                <TableCell style={{ textAlign: 'center' }}><span className="text-sm">{parseFloat(user?.AvgSleep).toFixed(2)}</span></TableCell>
+                  </TableCell>
+                  <TableCell className="text-center"><span className="text-sm">{connectedWalletData.Name}</span></TableCell>
+                  <TableCell className="text-center"><span className="text-sm">{connectedWalletData.Numuploads}</span></TableCell>
+                  <TableCell className="text-center"><span className="text-sm">{connectedWalletData.Tokens ? parseFloat(connectedWalletData.Tokens).toFixed(2) : 'N/A'}</span></TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </FourColumnTable>
+        </TableContainer>
+      </div>
+
+      <div style={{ marginBottom: "20px" }} />
+      <div className="mb-4" />
+      <TableContainer>
+        <FourColumnTable>
+          <TableHeader>
+            <tr>
+              <TableCell className="align-middle">User Wallet</TableCell>
+              <TableCell className="align-middle text-center">Name</TableCell>
+              <TableCell
+                className="align-middle text-center cursor-pointer"
+                onClick={handleSortNumUploads}
+              >
+                Num Uploads
+              </TableCell>
+              <TableCell
+                className="align-middle text-center cursor-pointer"
+                onClick={handleSortTokens}
+              >
+                Intra Tokens
+              </TableCell>
+            </tr>
+          </TableHeader>
+          <TableBody>
+            {data.length === 0 ? (
+              <TableRow>
+                <TableCell><Skeleton /></TableCell>
+                <TableCell><Skeleton /></TableCell>
+                <TableCell><Skeleton /></TableCell>
+                <TableCell><Skeleton /></TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            ) : (
+              data.map((user: any, i: number) => (
+                <TableRow key={i}>
+                  <TableCell>
+                    <div className="flex items-center text-sm">
+                      {user?.Pfpdata ? (
+                        <Avatar className="mr-3 md:block" src={user.Pfpdata} alt="User image" />
+                      ) : (
+                        <OutlinePersonIcon className="w-8 h-8 mr-3" />
+                      )}
+                      <div>
+                        <p className="font-semibold">
+                          <span className="hidden md:inline">{user.Wallet}</span>
+                          <span className="inline md:hidden">{`${user.Wallet.slice(0,5)}...${user.Wallet.slice(-3)}`}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-center"><span className="text-sm">{user.Name}</span></TableCell>
+                  <TableCell className="text-center"><span className="text-sm">{user.Numuploads}</span></TableCell>
+                  <TableCell className="text-center"><span className="text-sm">{parseFloat(user.Tokens).toFixed(2)}</span></TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </FourColumnTable>
+      </TableContainer>
       <TableFooter>
         <Pagination
           totalResults={leaderboard.length}
