@@ -113,17 +113,16 @@ function Dashboard() {
 
   useEffect(() => {
     let sorted;
-    const sliceData = leaderboard.slice((page - 1) * resultsPerPage, page * resultsPerPage);
     if (lastSortedColumn === 'Num Uploads') {
-      sorted = sortDataNumUploads([...sliceData]);
+      sorted = sortDataNumUploads([...leaderboard]);
     } else {
-      sorted = sortDataTokens([...sliceData]);
+      sorted = sortDataTokens([...leaderboard]);
     }
     setData(sorted);
     setReferralCodesData(
       referralCodes.slice((code - 1) * codePerPage, code * codePerPage)
     );
-  }, [page, code, referralCodes, leaderboard, sortDirection, lastSortedColumn]);
+  }, [code, referralCodes, leaderboard, sortDirection, lastSortedColumn]);
 
   const handleSortNumUploads = () => {
     setLastSortedColumn('Num Uploads');
