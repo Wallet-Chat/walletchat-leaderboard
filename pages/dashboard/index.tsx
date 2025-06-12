@@ -226,7 +226,16 @@ function Dashboard() {
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="text-center"><span className="text-sm">{connectedWalletData.Name}</span></TableCell>
+                  <TableCell className="text-center">
+                    <span className="text-sm">
+                      <span className="hidden md:inline">{connectedWalletData.Name}</span>
+                      {connectedWalletData.Name.length > 11 ? (
+                        <span className="inline md:hidden">{`${connectedWalletData.Name.slice(0,8)}...${connectedWalletData.Name.slice(-3)}`}</span>
+                      ) : (
+                        <span className="inline md:hidden">{connectedWalletData.Name}</span>
+                      )}
+                    </span>
+                  </TableCell>
                   <TableCell className="text-center"><span className="text-sm">{connectedWalletData.Numuploads}</span></TableCell>
                   <TableCell className="text-center"><span className="text-sm">{connectedWalletData.Tokens ? parseFloat(connectedWalletData.Tokens).toFixed(2) : 'N/A'}</span></TableCell>
                 </TableRow>
@@ -284,7 +293,12 @@ function Dashboard() {
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="text-center"><span className="text-sm">{user.Name}</span></TableCell>
+                  <TableCell className="text-center">
+                    <span className="text-sm">
+                      <span className="hidden md:inline">{user.Name}</span>
+                      <span className="inline md:hidden">{user.Name.length > 11 ? `${user.Name.slice(0,8)}...${user.Name.slice(-3)}` : user.Name}</span>
+                    </span>
+                  </TableCell>
                   <TableCell className="text-center"><span className="text-sm">{user.Numuploads}</span></TableCell>
                   <TableCell className="text-center"><span className="text-sm">{parseFloat(user.Tokens).toFixed(2)}</span></TableCell>
                 </TableRow>
