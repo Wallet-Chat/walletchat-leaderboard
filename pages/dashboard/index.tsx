@@ -195,7 +195,7 @@ function Dashboard() {
                 <TableCell className="align-middle">Connected Wallet</TableCell>
                 <TableCell className="align-middle text-center">Name</TableCell>
                 <TableCell className="align-middle text-center">Num Uploads</TableCell>
-                <TableCell className="align-middle text-center">Intra Tokens</TableCell>
+                <TableCell className="align-middle text-center">Intra Points</TableCell>
               </tr>
             </TableHeader>
             <TableBody>
@@ -262,7 +262,7 @@ function Dashboard() {
                 className="align-middle text-center cursor-pointer"
                 onClick={handleSortTokens}
               >
-                Intra Tokens
+                Intra Points
               </TableCell>
             </tr>
           </TableHeader>
