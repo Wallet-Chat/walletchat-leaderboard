@@ -158,7 +158,7 @@ function Dashboard() {
         );
         const d = await res.json();
         const fetched = d[0]?.name;
-        const fallback = `${connectedWalletData.Wallet.slice(0, 6)}...${connectedWalletData.Wallet.slice(-4)}`;
+        const fallback = `${connectedWalletData.Wallet.slice(0, 5)}...${connectedWalletData.Wallet.slice(-3)}`;
         setName(fetched || fallback);
         setTempName(fetched || fallback);
       }
@@ -211,9 +211,9 @@ function Dashboard() {
                   <TableCell>
                     <div className="flex items-center text-sm">
                       {connectedWalletData.Pfpdata ? (
-                        <Avatar className="mr-3 md:block" src={connectedWalletData.Pfpdata} alt="User image" />
+                        <Avatar className="mr-3 md:block hidden md:block" src={connectedWalletData.Pfpdata} alt="User image" />
                       ) : (
-                        <OutlinePersonIcon className="w-8 h-8 mr-3" />
+                        <OutlinePersonIcon className="w-8 h-8 mr-3 hidden md:block" />
                       )}
                       <div>
                         <p className="font-semibold">
@@ -228,8 +228,8 @@ function Dashboard() {
                   <TableCell className="text-center">
                     <span className="text-sm">
                       <span className="hidden md:inline">{connectedWalletData.Name}</span>
-                      {connectedWalletData.Name.length > 11 ? (
-                        <span className="inline md:hidden">{`${connectedWalletData.Name.slice(0,8)}...${connectedWalletData.Name.slice(-3)}`}</span>
+                      {connectedWalletData.Name.length > 10 ? (
+                        <span className="inline md:hidden">{`${connectedWalletData.Name.slice(0,5)}...${connectedWalletData.Name.slice(-3)}`}</span>
                       ) : (
                         <span className="inline md:hidden">{connectedWalletData.Name}</span>
                       )}
@@ -279,11 +279,13 @@ function Dashboard() {
                 <TableRow key={i}>
                   <TableCell>
                     <div className="flex items-center text-sm">
-                      {user?.Pfpdata ? (
-                        <Avatar className="mr-3 md:block" src={user.Pfpdata} alt="User image" />
-                      ) : (
-                        <OutlinePersonIcon className="w-8 h-8 mr-3" />
-                      )}
+                      <div className="hidden md:block">
+                        {user?.Pfpdata ? (
+                          <Avatar src={user.Pfpdata} alt="User image" />
+                        ) : (
+                          <OutlinePersonIcon className="w-8 h-8" />
+                        )}
+                      </div>
                       <div>
                         <p className="font-semibold">
                           <span className="hidden md:inline">{user.Wallet}</span>
@@ -295,7 +297,7 @@ function Dashboard() {
                   <TableCell className="text-center">
                     <span className="text-sm">
                       <span className="hidden md:inline">{user.Name}</span>
-                      <span className="inline md:hidden">{user.Name.length > 11 ? `${user.Name.slice(0,8)}...${user.Name.slice(-3)}` : user.Name}</span>
+                      <span className="inline md:hidden">{user.Name.length > 10 ? `${user.Name.slice(0,5)}...${user.Name.slice(-3)}` : user.Name}</span>
                     </span>
                   </TableCell>
                   <TableCell className="text-center"><span className="text-sm">{user.Numuploads}</span></TableCell>
