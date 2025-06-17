@@ -188,7 +188,7 @@ function Dashboard() {
       </PageTitle>
 
       <div className="mb-4">
-        <TableContainer>
+        <TableContainer className="border-2 border-yellow-300 rounded-md">
           <FourColumnTable>
             <TableHeader>
               <tr>
@@ -207,7 +207,7 @@ function Dashboard() {
                   <TableCell><Skeleton /></TableCell>
                 </TableRow>
               ) : (
-                <TableRow className="bg-yellow-100">
+                <TableRow>
                   <TableCell>
                     <div className="flex items-center text-sm">
                       {connectedWalletData.Pfpdata ? (
