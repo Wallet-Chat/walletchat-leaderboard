@@ -69,7 +69,7 @@ function Dashboard() {
     Legend
   );
 
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [lastSortedColumn, setLastSortedColumn] = useState<'Tokens' | 'Num Uploads'>('Tokens');
   const [code, setCode] = useState(1);
   const [page, setPage] = useState(1);
